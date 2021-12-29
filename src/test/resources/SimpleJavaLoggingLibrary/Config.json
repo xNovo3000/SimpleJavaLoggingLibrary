@@ -1,0 +1,15 @@
+{
+  "loggers": [
+    {
+      "name": "MainLogger",
+      "targets": ["Console"]
+    }
+  ],
+  "targets": [
+    {
+      "name": "Console",
+      "type": "console",
+      "format": "%d [%l] %t - %m\n"
+    }
+  ]
+}

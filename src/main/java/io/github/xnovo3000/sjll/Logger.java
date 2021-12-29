@@ -9,6 +9,5 @@ public interface Logger {
 	void w(Object object);
 	
 	void e(Object object);
-
 	
 }

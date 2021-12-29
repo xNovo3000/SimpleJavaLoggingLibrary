@@ -10,7 +10,8 @@ public class ConsoleOutputProvider implements OutputProvider {
 	}
 	
 	@Override
-	public void close() throws Exception {
+	public void close() {
+		System.out.flush();
 		System.out.close();
 	}
 	

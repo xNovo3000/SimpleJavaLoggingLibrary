@@ -1,6 +1,5 @@
 package io.github.xnovo3000.sjll.implementation;
 
-import io.github.xnovo3000.sjll.LogTarget;
 import io.github.xnovo3000.sjll.data.LogMessage;
 import io.github.xnovo3000.sjll.outputprovider.OutputProvider;
 
@@ -8,14 +7,14 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ILogTarget implements LogTarget {
+public class LogTarget implements Runnable, AutoCloseable {
 	
 	private boolean shouldClose;
-	private final List<String> messages;
+	private final List<LogMessage> messages;
 	private final OutputProvider outputProvider;
 	/* TODO: Add formatting */
 	
-	public ILogTarget(OutputProvider op) {
+	public LogTarget(OutputProvider op) {
 		this.shouldClose = false;
 		this.messages = new ArrayList<>();
 		this.outputProvider = op;
@@ -35,25 +34,26 @@ public class ILogTarget implements LogTarget {
 				}
 			}
 			// Read all messages and free the main list
-			List<String> temporaryMessages;
+			List<LogMessage> temporaryMessages;
 			synchronized (messages) {
 				temporaryMessages = new ArrayList<>(messages);
 				messages.clear();
 			}
-			temporaryMessages.forEach(t -> {
-				try {
-					outputProvider.getOutputStream().write(t.getBytes());
-				} catch (IOException e) {
-					e.printStackTrace();
+			// Write the messages to the stream and flush
+			try {
+				for (LogMessage logMessage : temporaryMessages) {
+					outputProvider.getOutputStream().write(logMessage.getMessage().getBytes());
 				}
-			});
+				outputProvider.getOutputStream().flush();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
 		}
 	}
 	
-	@Override
 	public synchronized void put(LogMessage message) {
 		synchronized (messages) {
-			// FIXME: messages.add(message);
+			messages.add(message);
 		}
 		notifyAll();  // Unlock the wait in the run() method
 	}

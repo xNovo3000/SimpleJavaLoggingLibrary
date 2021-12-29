@@ -1,47 +1,61 @@
 package io.github.xnovo3000.sjll;
 
+import io.github.xnovo3000.sjll.exception.ConfigurationErrorException;
 import io.github.xnovo3000.sjll.exception.ConfigurationFileNotFoundException;
 import io.github.xnovo3000.sjll.exception.LoggerNotFoundException;
+import io.github.xnovo3000.sjll.exception.TargetNotFoundException;
+import io.github.xnovo3000.sjll.implementation.LogTarget;
+import io.github.xnovo3000.sjll.implementation.ILogger;
+import io.github.xnovo3000.sjll.outputprovider.ConsoleOutputProvider;
+import io.github.xnovo3000.sjll.outputprovider.FileOutputProvider;
+import io.github.xnovo3000.sjll.outputprovider.OutputProvider;
+import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.io.BufferedReader;
+import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-public final class LogFactory {
+public final class LogFactory implements AutoCloseable {
 	
 	/* Thread-safe singleton pattern */
 	
 	private static LogFactory INSTANCE;
 	
-	static {
-		try {
-			INSTANCE = new LogFactory();
-		} catch (ConfigurationFileNotFoundException e) {
-			e.printStackTrace();
+	public static synchronized Logger getLogger(String key) throws LoggerNotFoundException {
+		// The first call initializes it
+		if (INSTANCE == null) {
+			try {
+				INSTANCE = new LogFactory();
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
 		}
-	}
-	
-	public static Logger getLogger(String key) throws LoggerNotFoundException {
+		// Get the required logger
 		return INSTANCE.getLoggerImpl(key);
 	}
 	
 	/* Utils */
 	
-	private static final String CONFIG_FILE_PATH = "sjll/config.json";
+	private static final String CONFIG_FILE_PATH = "SimpleJavaLoggingLibrary/Config.json";
 	
 	/* The class implementation */
 	
 	private final Map<String, Logger> loggers;
 	private final Map<String, LogTarget> targets;
+	private final List<Thread> activatedThreads;
 	
-	private LogFactory() throws ConfigurationFileNotFoundException {
+	private LogFactory() throws ConfigurationFileNotFoundException, ConfigurationErrorException, FileNotFoundException {
 		// Create the references
 		loggers = new HashMap<>();
 		targets = new HashMap<>();
+		activatedThreads = new ArrayList<>();
 		// Get the JSON
 		InputStream is = getClass().getClassLoader().getResourceAsStream(CONFIG_FILE_PATH);
 		if (is == null) {
@@ -50,10 +64,54 @@ public final class LogFactory {
 		String stringJson = new BufferedReader(new InputStreamReader(is))
 			.lines().parallel().collect(Collectors.joining("\n"));
 		JSONObject jsonObject = new JSONObject(stringJson);
-		// TODO: Create the targets using information in the json
-		// TODO: Create the loggers
-		// TODO: Link the loggers with the targets
-		// TODO: Enable the target threads
+		JSONArray myTargets = jsonObject.getJSONArray("targets");
+		// Create the targets using information in the json
+		for (Object oTarget : myTargets) {
+			JSONObject target = (JSONObject) oTarget;
+			String name = target.getString("name");
+			if (targets.containsKey(name)) {
+				throw new ConfigurationErrorException("Duplicate name in \"targets\": " + name);
+			}
+			OutputProvider outputProvider;
+			switch (target.getString("type")) {
+				case "console":
+					outputProvider = new ConsoleOutputProvider();
+					break;
+				case "file":
+					outputProvider = new FileOutputProvider(target.getString("filename"));
+					break;
+				/* TODO: Add NetworkOutputProvider */
+				default:
+					throw new ConfigurationErrorException("Wrong configuration type for key: " + name);
+			}
+			// TODO: Add the formatters
+			targets.put(name, new LogTarget(outputProvider));
+		}
+		// Create the loggers
+		JSONArray myLoggers = jsonObject.getJSONArray("loggers");
+		for (Object oLogger : myLoggers) {
+			JSONObject logger = (JSONObject) oLogger;
+			String name = logger.getString("name");
+			if (loggers.containsKey(name)) {
+				throw new ConfigurationErrorException("Duplicate name in \"loggers\": " + name);
+			}
+			JSONArray targetsInLogger = logger.getJSONArray("targets");
+			List<LogTarget> finalTargets = new ArrayList<>();
+			for (int j = 0; j < targetsInLogger.length(); j++) {
+				String targetName = targetsInLogger.getString(0);
+				if (!targets.containsKey(targetName)) {
+					throw new TargetNotFoundException(targetName);
+				}
+				finalTargets.add(targets.get(targetName));
+			}
+			loggers.put(name, new ILogger(finalTargets));
+		}
+		// Enable the target threads
+		targets.forEach((n, t) -> {
+			Thread t1 = new Thread(t);
+			t1.start();
+			activatedThreads.add(t1);
+		});
 	}
 	
 	private Logger getLoggerImpl(String key) throws LoggerNotFoundException {
@@ -62,6 +120,19 @@ public final class LogFactory {
 			throw new LoggerNotFoundException(key);
 		}
 		return logger;
+	}
+	
+	@Override
+	public void close() throws Exception {
+		for (Map.Entry<String, LogTarget> target : targets.entrySet()) {
+			target.getValue().close();
+		}
+		for (Thread activatedThread : activatedThreads) {
+			activatedThread.join();
+		}
+		activatedThreads.clear();
+		targets.clear();
+		loggers.clear();
 	}
 	
 }

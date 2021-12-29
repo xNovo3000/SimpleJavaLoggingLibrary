@@ -1,12 +1,10 @@
 package io.github.xnovo3000.sjll.implementation;
 
-import io.github.xnovo3000.sjll.LogTarget;
 import io.github.xnovo3000.sjll.Logger;
 import io.github.xnovo3000.sjll.data.Level;
 import io.github.xnovo3000.sjll.data.LogMessage;
 
 import java.util.List;
-import java.util.Objects;
 
 public class ILogger implements Logger {
 	
@@ -37,7 +35,9 @@ public class ILogger implements Logger {
 	}
 	
 	private void partialLogImpl(Level level, Object object) {
-		Objects.requireNonNull(object);
+		if (object == null) {
+			object = "null";
+		}
 		completeLogImpl(new LogMessage(level, object.toString()));
 	}
 	

@@ -2,36 +2,28 @@ package io.github.xnovo3000.sjll.data;
 
 public enum Level {
 	
-	DEBUG("Debug"),
-	INFO("Info"),
-	WARNING("Warning"),
-	ERROR("Error");
+	DEBUG("DEBUG"),
+	INFO("INFO"),
+	WARNING("WARN"),
+	ERROR("ERR");
 	
-	private final char shortName;
-	private final String longName;
-	private final String longNameUppercase;
+	private final String name;
 	
 	Level(String name) {
-		this.shortName = name.charAt(0);
-		this.longName = name;
-		this.longNameUppercase = name.toUpperCase();
+		this.name = name;
 	}
 	
-	public char getShortName() {
-		return shortName;
+	public char getFirstChar() {
+		return name.charAt(0);
 	}
 	
-	public String getLongName() {
-		return longName;
-	}
-	
-	public String getLongNameUppercase() {
-		return longNameUppercase;
+	public String getName() {
+		return name;
 	}
 	
 	@Override
 	public String toString() {
-		return longName;
+		return name;
 	}
 	
 }
