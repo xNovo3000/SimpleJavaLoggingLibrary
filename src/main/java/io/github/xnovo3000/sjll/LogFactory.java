@@ -4,6 +4,10 @@ import io.github.xnovo3000.sjll.exception.ConfigurationErrorException;
 import io.github.xnovo3000.sjll.exception.ConfigurationFileNotFoundException;
 import io.github.xnovo3000.sjll.exception.LoggerNotFoundException;
 import io.github.xnovo3000.sjll.exception.TargetNotFoundException;
+import io.github.xnovo3000.sjll.formatter.DateTimeFormatter;
+import io.github.xnovo3000.sjll.formatter.Formatter;
+import io.github.xnovo3000.sjll.formatter.StaticStringFormatter;
+import io.github.xnovo3000.sjll.formatter.ThreadNameFormatter;
 import io.github.xnovo3000.sjll.implementation.LogTarget;
 import io.github.xnovo3000.sjll.implementation.ILogger;
 import io.github.xnovo3000.sjll.outputprovider.ConsoleOutputProvider;
@@ -84,8 +88,7 @@ public final class LogFactory implements AutoCloseable {
 				default:
 					throw new ConfigurationErrorException("Wrong configuration type for key: " + name);
 			}
-			// TODO: Add the formatters
-			targets.put(name, new LogTarget(outputProvider));
+			targets.put(name, new LogTarget(outputProvider, getFormattersByString(target.getString("format"))));
 		}
 		// Create the loggers
 		JSONArray myLoggers = jsonObject.getJSONArray("loggers");
@@ -120,6 +123,36 @@ public final class LogFactory implements AutoCloseable {
 			throw new LoggerNotFoundException(key);
 		}
 		return logger;
+	}
+	
+	private List<Formatter> getFormattersByString(String value) {
+		// TODO: Add the formatters
+		final List<Formatter> formatters = new ArrayList<>();
+		StringBuilder activeStaticString = new StringBuilder();
+		char oldChar = '\0';
+		for (char x : value.toCharArray()) {
+			if (x == '%') {
+				// Push the string formatter and start custom formatter
+				if (activeStaticString.length() > 0) {
+					formatters.add(new StaticStringFormatter(activeStaticString.toString()));
+				}
+				activeStaticString.setLength(0);
+			} else if (oldChar == '%') {
+				// TODO: Check for some formats
+				switch (x) {
+					case 'd':
+						formatters.add(new DateTimeFormatter());
+						break;
+					case 't':
+						formatters.add(new ThreadNameFormatter());
+						break;
+				}
+			} else {
+				activeStaticString.append(x);
+			}
+			oldChar = x;
+		}
+		return formatters;
 	}
 	
 	@Override

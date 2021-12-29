@@ -1,6 +1,7 @@
 package io.github.xnovo3000.sjll.implementation;
 
 import io.github.xnovo3000.sjll.data.LogMessage;
+import io.github.xnovo3000.sjll.formatter.Formatter;
 import io.github.xnovo3000.sjll.outputprovider.OutputProvider;
 
 import java.io.IOException;
@@ -12,18 +13,21 @@ public class LogTarget implements Runnable, AutoCloseable {
 	private boolean shouldClose;
 	private final List<LogMessage> messages;
 	private final OutputProvider outputProvider;
+	private final List<Formatter> formatters;
 	/* TODO: Add formatting */
 	
-	public LogTarget(OutputProvider op) {
+	public LogTarget(OutputProvider op, List<Formatter> formatters) {
 		this.shouldClose = false;
 		this.messages = new ArrayList<>();
 		this.outputProvider = op;
+		this.formatters = formatters;
 	}
 	
 	/* FIXME: This implementation wakes up the thread lots of times. Use a timer instead */
 	
 	@Override
 	public synchronized void run() {
+		StringBuilder cachedString = new StringBuilder();
 		while (!shouldClose) {
 			// Wait until first message is sent
 			if (messages.isEmpty()) {
@@ -42,7 +46,11 @@ public class LogTarget implements Runnable, AutoCloseable {
 			// Write the messages to the stream and flush
 			try {
 				for (LogMessage logMessage : temporaryMessages) {
-					outputProvider.getOutputStream().write(logMessage.getMessage().getBytes());
+					cachedString.setLength(0);
+					for (Formatter formatter : formatters) {
+						cachedString = formatter.onFormatRequired(cachedString, logMessage);
+					}
+					outputProvider.getOutputStream().write(cachedString.toString().getBytes());
 				}
 				outputProvider.getOutputStream().flush();
 			} catch (IOException e) {
