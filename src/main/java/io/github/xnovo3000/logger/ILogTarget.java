@@ -15,6 +15,7 @@ public class ILogTarget implements LogTarget2 {
 	private final List<LogFormatter2> formatters;
 	private final OutputProvider outputProvider;
 	
+	// Caches
 	private final List<LogMessage2> consumedMessages;
 	private final StringBuilder messageBuilder;
 	

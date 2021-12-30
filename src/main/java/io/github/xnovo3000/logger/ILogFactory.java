@@ -6,11 +6,17 @@ import io.github.xnovo3000.Logger2;
 import io.github.xnovo3000.sjll.exception.ConfigurationErrorException;
 import io.github.xnovo3000.sjll.exception.ConfigurationFileNotFoundException;
 import io.github.xnovo3000.sjll.exception.LoggerNotFoundException;
+import io.github.xnovo3000.sjll.formatter.*;
+import io.github.xnovo3000.sjll.old.Formatter;
+import io.github.xnovo3000.sjll.outputprovider.ConsoleOutputProvider;
+import io.github.xnovo3000.sjll.outputprovider.FileOutputProvider;
+import io.github.xnovo3000.sjll.outputprovider.OutputProvider;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.BufferedReader;
+import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
@@ -20,6 +26,7 @@ import java.util.Map;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 public class ILogFactory implements LogFactory2 {
@@ -72,6 +79,10 @@ public class ILogFactory implements LogFactory2 {
 			}
 			generateLogger((JSONObject) loggerObject);
 		}
+		// Start the services
+		for (Map.Entry<String, LogTarget2> entry : logTargets.entrySet()) {
+			runningFutures.add(executorService.scheduleAtFixedRate(entry.getValue(), 0, 1, TimeUnit.SECONDS));
+		}
 		// Set initialized
 		initialized = true;
 	}
@@ -87,14 +98,35 @@ public class ILogFactory implements LogFactory2 {
 	}
 	
 	private void generateTarget(JSONObject jsonTargetObject) throws ConfigurationErrorException, JSONException {
-		// TODO: Implement
+		// Get JSON data
 		String name = jsonTargetObject.getString("name");
 		String type = jsonTargetObject.getString("type");
 		String format = jsonTargetObject.getString("format");
+		// Generate the OutputProvider
+		final OutputProvider outputProvider;
+		switch (type) {
+			case "console":
+				outputProvider = ConsoleOutputProvider.INSTANCE;
+				break;
+			case "file":
+				String fileName = jsonTargetObject.getString("filename");
+				try {
+					outputProvider = new FileOutputProvider(fileName);
+				} catch (FileNotFoundException e) {
+					e.printStackTrace();
+					throw new ConfigurationErrorException("The file at path \"" + fileName + "\" cannot be opened");
+				}
+				break;
+			case "network":
+				throw new ConfigurationErrorException("The network output is not supported yet");
+			default:
+				throw new ConfigurationErrorException("The \"type\" key in the target \"" + name + "\" is invalid");
+		}
+		// Generate the formats
+		logTargets.put(name, new ILogTarget(getFormattersByString(format), outputProvider));
 	}
 	
 	private void generateLogger(JSONObject jsonLoggerObject) throws ConfigurationErrorException, JSONException {
-		// TODO: Implement
 		String name = jsonLoggerObject.getString("name");
 		List<LogTarget2> loggerTargets = new ArrayList<>();
 		JSONArray jsonTargetStringArray = jsonLoggerObject.getJSONArray("targets");
@@ -109,7 +141,47 @@ public class ILogFactory implements LogFactory2 {
 			}
 			loggerTargets.add(logTargetFound);
 		}
-		
+		loggers.put(name, new ILogger(loggerTargets));
+	}
+	
+	private List<LogFormatter2> getFormattersByString(String value) {
+		final List<LogFormatter2> formatters = new ArrayList<>();
+		StringBuilder activeStaticString = new StringBuilder();
+		char oldChar = '\0';
+		for (char x : value.toCharArray()) {
+			if (x == '%') {
+				// Push the string formatter and start custom formatter
+				if (activeStaticString.length() > 0) {
+					formatters.add(new StaticStringFormatter(activeStaticString.toString()));
+				}
+				activeStaticString.setLength(0);
+			} else if (oldChar == '%') {
+				switch (x) {
+					case 'd':
+						formatters.add(DateTimeFormatter.INSTANCE);
+						break;
+					case 't':
+						formatters.add(ThreadNameFormatter.INSTANCE);
+						break;
+					case 'l':
+						formatters.add(new LevelFormatter(true));
+						break;
+					case 'L':
+						formatters.add(new LevelFormatter(false));
+						break;
+					case 'c':
+						formatters.add(CallerFormatter.INSTANCE);
+						break;
+					case 'm':
+						formatters.add(MessageFormatter.INSTANCE);
+						break;
+				}
+			} else {
+				activeStaticString.append(x);
+			}
+			oldChar = x;
+		}
+		return formatters;
 	}
 	
 }
