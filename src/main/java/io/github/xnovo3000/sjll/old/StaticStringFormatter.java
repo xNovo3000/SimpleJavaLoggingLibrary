@@ -1,6 +1,4 @@
-package io.github.xnovo3000.sjll.formatter;
-
-import io.github.xnovo3000.sjll.data.LogMessage;
+package io.github.xnovo3000.sjll.old;
 
 public class StaticStringFormatter implements Formatter {
 	

@@ -1,5 +1,7 @@
 package io.github.xnovo3000.sjll;
 
+import io.github.xnovo3000.sjll.old.LogFactory;
+import io.github.xnovo3000.sjll.old.Logger;
 import org.junit.jupiter.api.Test;
 
 class FirstTests {

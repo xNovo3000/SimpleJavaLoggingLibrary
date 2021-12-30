@@ -3,15 +3,17 @@ package io.github.xnovo3000.sjll.data;
 import java.time.Instant;
 import java.util.Objects;
 
-public class LogMessage {
+public class LogMessage2 {
 	
 	private final Level level;
+	private final String caller;
 	private final String message;
 	private final String threadName;
 	private final Instant timestamp;
 	
-	public LogMessage(Level level, String message) {
+	public LogMessage2(Level level, String caller, String message) {
 		this.level = level;
+		this.caller = caller;
 		this.message = message;
 		this.threadName = Thread.currentThread().getName();
 		this.timestamp = Instant.now();
@@ -19,6 +21,10 @@ public class LogMessage {
 	
 	public Level getLevel() {
 		return level;
+	}
+	
+	public String getCaller() {
+		return caller;
 	}
 	
 	public String getMessage() {
@@ -37,14 +43,14 @@ public class LogMessage {
 	public boolean equals(Object o) {
 		if (this == o) return true;
 		if (o == null || getClass() != o.getClass()) return false;
-		LogMessage that = (LogMessage) o;
-		return level == that.level && Objects.equals(message, that.message) &&
-			Objects.equals(threadName, that.threadName) && Objects.equals(timestamp, that.timestamp);
+		LogMessage2 that = (LogMessage2) o;
+		return level == that.level && caller.equals(that.caller) && message.equals(that.message) &&
+			threadName.equals(that.threadName) && timestamp.equals(that.timestamp);
 	}
 	
 	@Override
 	public int hashCode() {
-		return Objects.hash(level, message, threadName, timestamp);
+		return Objects.hash(level, caller, message, threadName, timestamp);
 	}
 	
 }

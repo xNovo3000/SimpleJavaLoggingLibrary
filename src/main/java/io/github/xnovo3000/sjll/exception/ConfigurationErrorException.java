@@ -2,7 +2,7 @@ package io.github.xnovo3000.sjll.exception;
 
 import org.json.JSONException;
 
-public class ConfigurationErrorException extends Exception {
+public class ConfigurationErrorException extends RuntimeException {
 	
 	public ConfigurationErrorException(JSONException e) {
 		super(e);

@@ -1,8 +1,6 @@
-package io.github.xnovo3000.sjll.implementation;
+package io.github.xnovo3000.sjll.old;
 
-import io.github.xnovo3000.sjll.Logger;
 import io.github.xnovo3000.sjll.data.Level;
-import io.github.xnovo3000.sjll.data.LogMessage;
 
 import java.util.List;
 

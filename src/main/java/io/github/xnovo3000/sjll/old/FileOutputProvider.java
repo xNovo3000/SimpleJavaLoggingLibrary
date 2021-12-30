@@ -1,4 +1,6 @@
-package io.github.xnovo3000.sjll.outputprovider;
+package io.github.xnovo3000.sjll.old;
+
+import io.github.xnovo3000.sjll.outputprovider.OutputProvider;
 
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;

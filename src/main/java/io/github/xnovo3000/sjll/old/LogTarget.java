@@ -1,7 +1,5 @@
-package io.github.xnovo3000.sjll.implementation;
+package io.github.xnovo3000.sjll.old;
 
-import io.github.xnovo3000.sjll.data.LogMessage;
-import io.github.xnovo3000.sjll.formatter.Formatter;
 import io.github.xnovo3000.sjll.outputprovider.OutputProvider;
 
 import java.io.IOException;

@@ -1,18 +1,10 @@
-package io.github.xnovo3000.sjll;
+package io.github.xnovo3000.sjll.old;
 
+import io.github.xnovo3000.sjll.outputprovider.OutputProvider;
 import io.github.xnovo3000.sjll.exception.ConfigurationErrorException;
 import io.github.xnovo3000.sjll.exception.ConfigurationFileNotFoundException;
 import io.github.xnovo3000.sjll.exception.LoggerNotFoundException;
 import io.github.xnovo3000.sjll.exception.TargetNotFoundException;
-import io.github.xnovo3000.sjll.formatter.DateTimeFormatter;
-import io.github.xnovo3000.sjll.formatter.Formatter;
-import io.github.xnovo3000.sjll.formatter.StaticStringFormatter;
-import io.github.xnovo3000.sjll.formatter.ThreadNameFormatter;
-import io.github.xnovo3000.sjll.implementation.LogTarget;
-import io.github.xnovo3000.sjll.implementation.ILogger;
-import io.github.xnovo3000.sjll.outputprovider.ConsoleOutputProvider;
-import io.github.xnovo3000.sjll.outputprovider.FileOutputProvider;
-import io.github.xnovo3000.sjll.outputprovider.OutputProvider;
 import org.json.JSONArray;
 import org.json.JSONObject;
 

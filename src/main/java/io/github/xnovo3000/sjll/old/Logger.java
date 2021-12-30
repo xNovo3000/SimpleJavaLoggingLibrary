@@ -1,4 +1,4 @@
-package io.github.xnovo3000.sjll;
+package io.github.xnovo3000.sjll.old;
 
 public interface Logger {
 	
