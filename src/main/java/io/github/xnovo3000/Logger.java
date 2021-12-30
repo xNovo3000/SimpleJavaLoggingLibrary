@@ -1,6 +1,6 @@
 package io.github.xnovo3000;
 
-public interface Logger2 {
+public interface Logger {
 	
 	void d(Object obj);
 	

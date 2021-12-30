@@ -3,7 +3,7 @@ package io.github.xnovo3000;
 import io.github.xnovo3000.logger.ILogFactory;
 import io.github.xnovo3000.sjll.exception.LoggerNotFoundException;
 
-public interface LogFactory2 {
+public interface LogFactory {
 	
 	/* Static fields */
 
@@ -11,16 +11,16 @@ public interface LogFactory2 {
 	
 	/* Static functions */
 	
-	default Logger2 getLogger(Class<?> clazz) throws LoggerNotFoundException {
+	static Logger getLogger(Class<?> clazz) throws LoggerNotFoundException {
 		return ILogFactory.INSTANCE.getLoggerImpl(clazz.getCanonicalName());
 	}
 	
-	default Logger2 getLogger(String key) throws LoggerNotFoundException {
+	static Logger getLogger(String key) throws LoggerNotFoundException {
 		return ILogFactory.INSTANCE.getLoggerImpl(key);
 	}
 	
 	/* Implementations */
 	
-	Logger2 getLoggerImpl(String key);
+	Logger getLoggerImpl(String key);
 	
 }

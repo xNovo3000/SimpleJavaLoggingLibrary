@@ -1,16 +1,16 @@
 package io.github.xnovo3000.logger;
 
-import io.github.xnovo3000.LogTarget2;
-import io.github.xnovo3000.Logger2;
+import io.github.xnovo3000.LogTarget;
+import io.github.xnovo3000.Logger;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class ILogger implements Logger2 {
+public class ILogger implements Logger {
 	
-	private final List<LogTarget2> targets;
+	private final List<LogTarget> targets;
 	
-	public ILogger(List<LogTarget2> targets) {
+	public ILogger(List<LogTarget> targets) {
 		this.targets = new ArrayList<>();
 	}
 	

@@ -1,10 +1,8 @@
 package io.github.xnovo3000.sjll.formatter;
 
-import io.github.xnovo3000.sjll.data.LogMessage2;
-import io.github.xnovo3000.sjll.old.Formatter;
-import io.github.xnovo3000.sjll.old.LogMessage;
+import io.github.xnovo3000.sjll.data.LogMessage;
 
-public class StaticStringFormatter implements LogFormatter2 {
+public class StaticStringFormatter implements LogFormatter {
 	
 	private final String string;
 	
@@ -13,7 +11,7 @@ public class StaticStringFormatter implements LogFormatter2 {
 	}
 	
 	@Override
-	public void onFormat(StringBuilder current, LogMessage2 logMessage) {
+	public void onFormat(StringBuilder current, LogMessage logMessage) {
 		current.append(string);
 	}
 	

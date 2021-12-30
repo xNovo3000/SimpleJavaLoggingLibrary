@@ -1,27 +1,27 @@
 package io.github.xnovo3000.logger;
 
-import io.github.xnovo3000.LogTarget2;
-import io.github.xnovo3000.sjll.data.LogMessage2;
-import io.github.xnovo3000.sjll.formatter.LogFormatter2;
+import io.github.xnovo3000.LogTarget;
+import io.github.xnovo3000.sjll.data.LogMessage;
+import io.github.xnovo3000.sjll.formatter.LogFormatter;
 import io.github.xnovo3000.sjll.outputprovider.OutputProvider;
 
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ILogTarget implements LogTarget2 {
+public class ILogTarget implements LogTarget {
 	
-	private final List<LogMessage2> messages;
-	private final List<LogFormatter2> formatters;
+	private final List<LogMessage> messages;
+	private final List<LogFormatter> formatters;
 	private final OutputProvider outputProvider;
 	
 	// Caches
-	private final List<LogMessage2> consumedMessages;
+	private final List<LogMessage> consumedMessages;
 	private final StringBuilder messageBuilder;
 	
 	boolean shouldClose;
 	
-	public ILogTarget(List<LogFormatter2> formatters, OutputProvider outputProvider) {
+	public ILogTarget(List<LogFormatter> formatters, OutputProvider outputProvider) {
 		this.messages = new ArrayList<>();
 		this.formatters = formatters;
 		this.outputProvider = outputProvider;
@@ -41,9 +41,9 @@ public class ILogTarget implements LogTarget2 {
 		}
 		// Write to the OutputProvider
 		try {
-			for (LogMessage2 logMessage : consumedMessages) {
+			for (LogMessage logMessage : consumedMessages) {
 				messageBuilder.setLength(0);
-				for (LogFormatter2 formatter : formatters) {
+				for (LogFormatter formatter : formatters) {
 					formatter.onFormat(messageBuilder, logMessage);
 				}
 				outputProvider.getOutputStream().write(messageBuilder.toString().getBytes());
@@ -55,7 +55,7 @@ public class ILogTarget implements LogTarget2 {
 	}
 	
 	@Override
-	public void put(LogMessage2 logMessage) {
+	public void put(LogMessage logMessage) {
 		synchronized (messages) {
 			messages.add(logMessage);
 		}

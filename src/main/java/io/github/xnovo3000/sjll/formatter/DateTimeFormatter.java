@@ -1,10 +1,8 @@
 package io.github.xnovo3000.sjll.formatter;
 
-import io.github.xnovo3000.sjll.data.LogMessage2;
-import io.github.xnovo3000.sjll.old.Formatter;
-import io.github.xnovo3000.sjll.old.LogMessage;
+import io.github.xnovo3000.sjll.data.LogMessage;
 
-public class DateTimeFormatter implements LogFormatter2 {
+public class DateTimeFormatter implements LogFormatter {
 	
 	public static final DateTimeFormatter INSTANCE = new DateTimeFormatter();
 	
@@ -12,7 +10,7 @@ public class DateTimeFormatter implements LogFormatter2 {
 		java.time.format.DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss.nnnnnn");
 	
 	@Override
-	public void onFormat(StringBuilder current, LogMessage2 logMessage) {
+	public void onFormat(StringBuilder current, LogMessage logMessage) {
 		current.append(FORMATTER.format(logMessage.getTimestamp()));
 	}
 	

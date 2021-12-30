@@ -1,13 +1,12 @@
 package io.github.xnovo3000.logger;
 
-import io.github.xnovo3000.LogFactory2;
-import io.github.xnovo3000.LogTarget2;
-import io.github.xnovo3000.Logger2;
+import io.github.xnovo3000.LogFactory;
+import io.github.xnovo3000.LogTarget;
+import io.github.xnovo3000.Logger;
 import io.github.xnovo3000.sjll.exception.ConfigurationErrorException;
 import io.github.xnovo3000.sjll.exception.ConfigurationFileNotFoundException;
 import io.github.xnovo3000.sjll.exception.LoggerNotFoundException;
 import io.github.xnovo3000.sjll.formatter.*;
-import io.github.xnovo3000.sjll.old.Formatter;
 import io.github.xnovo3000.sjll.outputprovider.ConsoleOutputProvider;
 import io.github.xnovo3000.sjll.outputprovider.FileOutputProvider;
 import io.github.xnovo3000.sjll.outputprovider.OutputProvider;
@@ -29,7 +28,7 @@ import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
-public class ILogFactory implements LogFactory2 {
+public class ILogFactory implements LogFactory {
 	
 	/* Singleton pattern */
 	
@@ -41,18 +40,18 @@ public class ILogFactory implements LogFactory2 {
 	
 	private final ScheduledExecutorService executorService = Executors.newSingleThreadScheduledExecutor();
 	private final List<ScheduledFuture<?>> runningFutures = new ArrayList<>();
-	private final Map<String, Logger2> loggers = new HashMap<>();
-	private final Map<String, LogTarget2> logTargets = new HashMap<>();
+	private final Map<String, Logger> loggers = new HashMap<>();
+	private final Map<String, LogTarget> logTargets = new HashMap<>();
 	
 	boolean initialized = false;
 	
-	public synchronized Logger2 getLoggerImpl(String key) throws LoggerNotFoundException {
+	public synchronized Logger getLoggerImpl(String key) throws LoggerNotFoundException {
 		// Initialize if not. This method is called on static synchronized: no problem at all!
 		if (!initialized) {
 			initialize();
 		}
 		// Try to get the logger
-		Logger2 logger = loggers.get(key);
+		Logger logger = loggers.get(key);
 		if (logger == null) {
 			throw new LoggerNotFoundException(key);
 		}
@@ -80,7 +79,7 @@ public class ILogFactory implements LogFactory2 {
 			generateLogger((JSONObject) loggerObject);
 		}
 		// Start the services
-		for (Map.Entry<String, LogTarget2> entry : logTargets.entrySet()) {
+		for (Map.Entry<String, LogTarget> entry : logTargets.entrySet()) {
 			runningFutures.add(executorService.scheduleAtFixedRate(entry.getValue(), 0, 1, TimeUnit.SECONDS));
 		}
 		// Set initialized
@@ -128,13 +127,13 @@ public class ILogFactory implements LogFactory2 {
 	
 	private void generateLogger(JSONObject jsonLoggerObject) throws ConfigurationErrorException, JSONException {
 		String name = jsonLoggerObject.getString("name");
-		List<LogTarget2> loggerTargets = new ArrayList<>();
+		List<LogTarget> loggerTargets = new ArrayList<>();
 		JSONArray jsonTargetStringArray = jsonLoggerObject.getJSONArray("targets");
 		for (Object jsonTargetObject : jsonTargetStringArray) {
 			if (jsonTargetObject.getClass() != String.class) {
 				throw new ConfigurationErrorException("Targets in the logger \"" + name + "\" must be strings");
 			}
-			LogTarget2 logTargetFound = logTargets.get(jsonTargetObject);
+			LogTarget logTargetFound = logTargets.get(jsonTargetObject);
 			if (logTargetFound == null) {
 				throw new ConfigurationErrorException(
 					"Target \"" + jsonTargetObject + "\" in the logger \"" + name + "\" not found");
@@ -144,8 +143,8 @@ public class ILogFactory implements LogFactory2 {
 		loggers.put(name, new ILogger(loggerTargets));
 	}
 	
-	private List<LogFormatter2> getFormattersByString(String value) {
-		final List<LogFormatter2> formatters = new ArrayList<>();
+	private List<LogFormatter> getFormattersByString(String value) {
+		final List<LogFormatter> formatters = new ArrayList<>();
 		StringBuilder activeStaticString = new StringBuilder();
 		char oldChar = '\0';
 		for (char x : value.toCharArray()) {
@@ -175,6 +174,8 @@ public class ILogFactory implements LogFactory2 {
 					case 'm':
 						formatters.add(MessageFormatter.INSTANCE);
 						break;
+					default:
+						throw new ConfigurationErrorException("Format error");
 				}
 			} else {
 				activeStaticString.append(x);

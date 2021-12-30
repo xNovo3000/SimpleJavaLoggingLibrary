@@ -3,7 +3,7 @@ package io.github.xnovo3000.sjll.data;
 import java.time.Instant;
 import java.util.Objects;
 
-public class LogMessage2 {
+public class LogMessage {
 	
 	private final Level level;
 	private final String caller;
@@ -11,7 +11,7 @@ public class LogMessage2 {
 	private final String threadName;
 	private final Instant timestamp;
 	
-	public LogMessage2(Level level, String caller, String message) {
+	public LogMessage(Level level, String caller, String message) {
 		this.level = level;
 		this.caller = caller;
 		this.message = message;
@@ -43,7 +43,7 @@ public class LogMessage2 {
 	public boolean equals(Object o) {
 		if (this == o) return true;
 		if (o == null || getClass() != o.getClass()) return false;
-		LogMessage2 that = (LogMessage2) o;
+		LogMessage that = (LogMessage) o;
 		return level == that.level && caller.equals(that.caller) && message.equals(that.message) &&
 			threadName.equals(that.threadName) && timestamp.equals(that.timestamp);
 	}
