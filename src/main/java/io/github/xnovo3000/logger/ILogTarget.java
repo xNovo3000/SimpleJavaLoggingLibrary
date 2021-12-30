@@ -32,7 +32,10 @@ public class ILogTarget implements LogTarget {
 	
 	@Override
 	public void run() {
-		// TODO: Handle shouldClose
+		// Handle shouldClose
+		if (shouldClose) {
+			return;
+		}
 		// Get the consumed messages
 		consumedMessages.clear();
 		synchronized (messages) {

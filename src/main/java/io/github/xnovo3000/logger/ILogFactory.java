@@ -58,7 +58,6 @@ public class ILogFactory implements LogFactory {
 		return logger;
 	}
 	
-	// TODO: Initialize the LogFactory
 	private void initialize() throws ConfigurationFileNotFoundException, ConfigurationErrorException, JSONException {
 		// Get the configuration
 		JSONObject configurationRoot = loadConfiguration();
