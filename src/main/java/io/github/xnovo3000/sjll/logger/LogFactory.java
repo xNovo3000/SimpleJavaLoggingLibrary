@@ -1,8 +1,5 @@
-package io.github.xnovo3000.logger;
+package io.github.xnovo3000.sjll.logger;
 
-import io.github.xnovo3000.LogFactory;
-import io.github.xnovo3000.LogTarget;
-import io.github.xnovo3000.Logger;
 import io.github.xnovo3000.sjll.exception.ConfigurationErrorException;
 import io.github.xnovo3000.sjll.exception.ConfigurationFileNotFoundException;
 import io.github.xnovo3000.sjll.exception.LoggerNotFoundException;
@@ -22,30 +19,42 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.ScheduledFuture;
-import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
-public class ILogFactory implements LogFactory {
+public final class LogFactory {
+	
+	/* Static fields and performance optimizations */
+	
+	private static final LogFormatter FORMATTER_CALLER = new CallerFormatter();
+	private static final LogFormatter FORMATTER_INSTANT = new InstantFormatter();
+	private static final LogFormatter FORMATTER_MULTI_LEVEL = new LevelFormatter(false);
+	private static final LogFormatter FORMATTER_MESSAGE = new MessageFormatter();
+	private static final LogFormatter FORMATTER_SINGLE_LEVEL = new SingleCharacterLevelFormatter();
+	private static final LogFormatter FORMATTER_THREAD_NAME = new ThreadNameFormatter();
+	
+	private static final OutputProvider OUTPUT_PROVIDER_CONSOLE = new ConsoleOutputProvider();
+	
+	public static final String CONFIGURATION_FILE_PATH = "SJLL/Config.json";
 	
 	/* Singleton pattern */
 	
-	public static final ILogFactory INSTANCE = new ILogFactory();
+	private static final LogFactory INSTANCE = new LogFactory();
+	
+	public static synchronized Logger getLogger(String key) throws LoggerNotFoundException {
+		return INSTANCE.getLoggerImpl(key);
+	}
 	
 	/* Class implementation */
 	
-	private ILogFactory() {}
+	private final Map<String, IILogTarget> logTargets = new HashMap<>();
+	private final Map<String, IILogger> loggers = new HashMap<>();
+	private final List<Thread> threads = new ArrayList<>();
 	
-	private final ScheduledExecutorService executorService = Executors.newSingleThreadScheduledExecutor();
-	private final List<ScheduledFuture<?>> runningFutures = new ArrayList<>();
-	private final Map<String, Logger> loggers = new HashMap<>();
-	private final Map<String, LogTarget> logTargets = new HashMap<>();
+	private boolean initialized = false;
 	
-	boolean initialized = false;
+	private LogFactory() {}
 	
-	public synchronized Logger getLoggerImpl(String key) throws LoggerNotFoundException {
+	public Logger getLoggerImpl(String key) throws LoggerNotFoundException {
 		// Initialize if not. This method is called on static synchronized: no problem at all!
 		if (!initialized) {
 			initialize();
@@ -78,9 +87,13 @@ public class ILogFactory implements LogFactory {
 			generateLogger((JSONObject) loggerObject);
 		}
 		// Start the services
-		for (Map.Entry<String, LogTarget> entry : logTargets.entrySet()) {
-			runningFutures.add(executorService.scheduleAtFixedRate(entry.getValue(), 0, 1, TimeUnit.SECONDS));
+		for (Map.Entry<String, IILogTarget> entry : logTargets.entrySet()) {
+			Thread t1 = new Thread(entry.getValue(), entry.getKey() + "Thread");
+			t1.start();
+			threads.add(t1);
 		}
+		// Set shutdown hook for stopping threads and closing targets
+		Runtime.getRuntime().addShutdownHook(new ShutdownHookThread(new ArrayList<>(logTargets.values()), threads));
 		// Set initialized
 		initialized = true;
 	}
@@ -104,7 +117,7 @@ public class ILogFactory implements LogFactory {
 		final OutputProvider outputProvider;
 		switch (type) {
 			case "console":
-				outputProvider = ConsoleOutputProvider.INSTANCE;
+				outputProvider = OUTPUT_PROVIDER_CONSOLE;
 				break;
 			case "file":
 				String fileName = jsonTargetObject.getString("filename");
@@ -121,25 +134,25 @@ public class ILogFactory implements LogFactory {
 				throw new ConfigurationErrorException("The \"type\" key in the target \"" + name + "\" is invalid");
 		}
 		// Generate the formats
-		logTargets.put(name, new ILogTarget(getFormattersByString(format), outputProvider));
+		logTargets.put(name, new IILogTarget(getFormattersByString(format), outputProvider));
 	}
 	
 	private void generateLogger(JSONObject jsonLoggerObject) throws ConfigurationErrorException, JSONException {
 		String name = jsonLoggerObject.getString("name");
-		List<LogTarget> loggerTargets = new ArrayList<>();
+		List<IILogTarget> loggerTargets = new ArrayList<>();
 		JSONArray jsonTargetStringArray = jsonLoggerObject.getJSONArray("targets");
 		for (Object jsonTargetObject : jsonTargetStringArray) {
 			if (jsonTargetObject.getClass() != String.class) {
 				throw new ConfigurationErrorException("Targets in the logger \"" + name + "\" must be strings");
 			}
-			LogTarget logTargetFound = logTargets.get(jsonTargetObject);
+			IILogTarget logTargetFound = logTargets.get(jsonTargetObject);
 			if (logTargetFound == null) {
 				throw new ConfigurationErrorException(
 					"Target \"" + jsonTargetObject + "\" in the logger \"" + name + "\" not found");
 			}
 			loggerTargets.add(logTargetFound);
 		}
-		loggers.put(name, new ILogger(loggerTargets));
+		loggers.put(name, new IILogger(loggerTargets));
 	}
 	
 	private List<LogFormatter> getFormattersByString(String value) {
@@ -156,22 +169,22 @@ public class ILogFactory implements LogFactory {
 			} else if (oldChar == '%') {
 				switch (x) {
 					case 'd':
-						formatters.add(DateTimeFormatter.INSTANCE);
+						formatters.add(FORMATTER_INSTANT);
 						break;
 					case 't':
-						formatters.add(ThreadNameFormatter.INSTANCE);
+						formatters.add(FORMATTER_THREAD_NAME);
 						break;
 					case 'l':
-						formatters.add(new LevelFormatter(true));
+						formatters.add(FORMATTER_SINGLE_LEVEL);
 						break;
 					case 'L':
-						formatters.add(new LevelFormatter(false));
+						formatters.add(FORMATTER_MULTI_LEVEL);
 						break;
 					case 'c':
-						formatters.add(CallerFormatter.INSTANCE);
+						formatters.add(FORMATTER_CALLER);
 						break;
 					case 'm':
-						formatters.add(MessageFormatter.INSTANCE);
+						formatters.add(FORMATTER_MESSAGE);
 						break;
 					default:
 						throw new ConfigurationErrorException("Format error");
@@ -180,6 +193,9 @@ public class ILogFactory implements LogFactory {
 				activeStaticString.append(x);
 			}
 			oldChar = x;
+		}
+		if (activeStaticString.length() > 0) {
+			formatters.add(new StaticStringFormatter(activeStaticString.toString()));
 		}
 		return formatters;
 	}

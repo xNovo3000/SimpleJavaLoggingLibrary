@@ -4,8 +4,8 @@ public enum Level {
 	
 	DEBUG("DEBUG"),
 	INFO("INFO"),
-	WARNING("WARN"),
-	ERROR("ERR");
+	WARNING("WARNING"),
+	ERROR("ERROR");
 	
 	private final String name;
 	

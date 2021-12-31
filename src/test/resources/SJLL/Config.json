@@ -9,7 +9,8 @@
     {
       "name": "Console",
       "type": "console",
-      "format": "%d [%l] %t - %m\n"
+      "filename": "./test.txt",
+      "format": "%d [%l] %t - %c: %m\n"
     }
   ]
 }
