@@ -10,6 +10,8 @@ class FirstTests {
 	void firstTests() {
 		Logger logger = LogFactory.getLogger("MainLogger");
 		logger.d("Caller", "Custom message");
+		logger.i("Caller", "Custom message");
+		logger.e("Caller", "Custom message");
 	}
 	
 }

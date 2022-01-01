@@ -16,10 +16,7 @@ import java.io.BufferedReader;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public final class LogFactory {
@@ -49,6 +46,7 @@ public final class LogFactory {
 	
 	private final Map<String, IILogTarget> logTargets = new HashMap<>();
 	private final Map<String, IILogger> loggers = new HashMap<>();
+	private final Set<OutputProvider> outputProviders = new HashSet<>();
 	private final List<Thread> threads = new ArrayList<>();
 	
 	private boolean initialized = false;
@@ -94,7 +92,8 @@ public final class LogFactory {
 			threads.add(t1);
 		}
 		// Set shutdown hook for stopping threads and closing targets
-		Runtime.getRuntime().addShutdownHook(new ShutdownHookThread(new ArrayList<>(logTargets.values()), threads));
+		Runtime.getRuntime().addShutdownHook(new ShutdownHookThread(new ArrayList<>(
+			logTargets.values()),threads, new ArrayList<>(outputProviders)));
 		// Set initialized
 		initialized = true;
 	}
@@ -134,6 +133,8 @@ public final class LogFactory {
 			default:
 				throw new ConfigurationErrorException("The \"type\" key in the target \"" + name + "\" is invalid");
 		}
+		// Put the OutputProvider inside the set
+		outputProviders.add(outputProvider);
 		// Generate the formats
 		logTargets.put(name, new IILogTarget(getFormattersByString(format), outputProvider));
 	}

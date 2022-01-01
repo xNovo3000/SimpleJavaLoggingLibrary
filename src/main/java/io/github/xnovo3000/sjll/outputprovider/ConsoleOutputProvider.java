@@ -14,4 +14,14 @@ public class ConsoleOutputProvider implements OutputProvider {
 		System.out.close();
 	}
 	
+	@Override
+	public boolean equals(Object obj) {
+		return this == obj;  // Singleton class
+	}
+	
+	@Override
+	public int hashCode() {
+		return getClass().hashCode();
+	}
+	
 }
