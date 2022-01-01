@@ -53,7 +53,7 @@ public final class LogFactory {
 	
 	private LogFactory() {}
 	
-	public Logger getLoggerImpl(String key) throws LoggerNotFoundException {
+	private Logger getLoggerImpl(String key) throws LoggerNotFoundException {
 		// Initialize if not. This method is called on static synchronized: no problem at all!
 		if (!initialized) {
 			initialize();
