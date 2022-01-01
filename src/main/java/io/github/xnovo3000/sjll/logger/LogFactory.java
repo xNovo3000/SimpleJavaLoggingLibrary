@@ -27,7 +27,7 @@ public final class LogFactory {
 	
 	private static final LogFormatter FORMATTER_CALLER = new CallerFormatter();
 	private static final LogFormatter FORMATTER_INSTANT = new InstantFormatter();
-	private static final LogFormatter FORMATTER_MULTI_LEVEL = new LevelFormatter(false);
+	private static final LogFormatter FORMATTER_MULTI_LEVEL = new LevelFormatter();
 	private static final LogFormatter FORMATTER_MESSAGE = new MessageFormatter();
 	private static final LogFormatter FORMATTER_SINGLE_LEVEL = new SingleCharacterLevelFormatter();
 	private static final LogFormatter FORMATTER_THREAD_NAME = new ThreadNameFormatter();

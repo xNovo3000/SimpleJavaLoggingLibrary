@@ -4,19 +4,9 @@ import io.github.xnovo3000.sjll.data.LogMessage;
 
 public class LevelFormatter implements LogFormatter {
 	
-	private final boolean singleCharacter;
-	
-	public LevelFormatter(boolean singleCharacter) {
-		this.singleCharacter = singleCharacter;
-	}
-	
 	@Override
 	public void onFormat(StringBuilder current, LogMessage logMessage) {
-		if (singleCharacter) {
-			current.append(logMessage.getLevel().getFirstChar());
-		} else {
-			current.append(logMessage.getLevel());
-		}
+		current.append(logMessage.getLevel().getFirstChar());
 	}
 	
 }

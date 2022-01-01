@@ -8,8 +8,6 @@ import java.util.Locale;
 
 public class InstantFormatter implements LogFormatter {
 	
-	public static final InstantFormatter INSTANCE = new InstantFormatter();
-	
 	private static final DateTimeFormatter FORMATTER = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss.SSS")
 		.withLocale(Locale.getDefault()).withZone(ZoneId.of("UTC"));
 	
