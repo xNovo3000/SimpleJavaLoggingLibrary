@@ -4,8 +4,6 @@ import java.io.OutputStream;
 
 public class ConsoleOutputProvider implements OutputProvider {
 	
-	public static final ConsoleOutputProvider INSTANCE = new ConsoleOutputProvider();
-	
 	@Override
 	public OutputStream getOutputStream() {
 		return System.out;

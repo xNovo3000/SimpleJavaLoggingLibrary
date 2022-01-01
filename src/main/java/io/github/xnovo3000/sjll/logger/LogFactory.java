@@ -3,6 +3,7 @@ package io.github.xnovo3000.sjll.logger;
 import io.github.xnovo3000.sjll.exception.ConfigurationErrorException;
 import io.github.xnovo3000.sjll.exception.ConfigurationFileNotFoundException;
 import io.github.xnovo3000.sjll.exception.LoggerNotFoundException;
+import io.github.xnovo3000.sjll.exception.TargetNotFoundException;
 import io.github.xnovo3000.sjll.formatter.*;
 import io.github.xnovo3000.sjll.outputprovider.ConsoleOutputProvider;
 import io.github.xnovo3000.sjll.outputprovider.FileOutputProvider;
@@ -141,14 +142,13 @@ public final class LogFactory {
 		String name = jsonLoggerObject.getString("name");
 		List<IILogTarget> loggerTargets = new ArrayList<>();
 		JSONArray jsonTargetStringArray = jsonLoggerObject.getJSONArray("targets");
-		for (Object jsonTargetObject : jsonTargetStringArray) {
-			if (jsonTargetObject.getClass() != String.class) {
+		for (Object jsonTargetName : jsonTargetStringArray) {
+			if (jsonTargetName.getClass() != String.class) {
 				throw new ConfigurationErrorException("Targets in the logger \"" + name + "\" must be strings");
 			}
-			IILogTarget logTargetFound = logTargets.get(jsonTargetObject);
+			IILogTarget logTargetFound = logTargets.get(jsonTargetName);
 			if (logTargetFound == null) {
-				throw new ConfigurationErrorException(
-					"Target \"" + jsonTargetObject + "\" in the logger \"" + name + "\" not found");
+				throw new TargetNotFoundException((String) jsonTargetName);
 			}
 			loggerTargets.add(logTargetFound);
 		}
