@@ -109,6 +109,12 @@ final class ILogFactory {
 		String name = jsonTargetObject.getString("name");
 		String type = jsonTargetObject.getString("type");
 		String format = jsonTargetObject.getString("format");
+		int minimumImportance;
+		try {
+			minimumImportance = jsonTargetObject.getInt("minimum_importance");
+		} catch (JSONException e) {
+			minimumImportance = 0;
+		}
 		// Generate the OutputProvider
 		final OutputProvider outputProvider;
 		switch (type) {
@@ -132,7 +138,7 @@ final class ILogFactory {
 		// Put the OutputProvider inside the set
 		outputProviders.add(outputProvider);
 		// Generate the formats
-		logTargets.put(name, new ILogTarget(getFormattersByString(format), outputProvider));
+		logTargets.put(name, new ILogTarget(getFormattersByString(format), outputProvider, minimumImportance));
 	}
 	
 	private void generateLogger(JSONObject jsonLoggerObject) throws ConfigurationErrorException, JSONException {

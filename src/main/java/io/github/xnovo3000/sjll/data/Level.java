@@ -2,15 +2,17 @@ package io.github.xnovo3000.sjll.data;
 
 public enum Level {
 	
-	DEBUG("DEBUG"),
-	INFO("INFO"),
-	WARNING("WARNING"),
-	ERROR("ERROR");
+	DEBUG("DEBUG", 10),
+	INFO("INFO", 20),
+	WARNING("WARNING", 30),
+	ERROR("ERROR", 40);
 	
 	private final String name;
+	private final int importance;
 	
-	Level(String name) {
+	Level(String name, int importance) {
 		this.name = name;
+		this.importance = importance;
 	}
 	
 	public char getFirstChar() {
@@ -19,6 +21,10 @@ public enum Level {
 	
 	public String getName() {
 		return name;
+	}
+	
+	public int getImportance() {
+		return importance;
 	}
 	
 	@Override

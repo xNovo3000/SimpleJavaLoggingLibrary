@@ -15,14 +15,16 @@ final class ILogTarget implements Runnable, AutoCloseable {
 	private final BlockingQueue<LogMessage> messages;
 	private final List<LogFormatter> formatters;
 	private final OutputProvider outputProvider;
+	private final int minimumImportance;
 	
 	private boolean shouldClose;
 	
-	ILogTarget(List<LogFormatter> formatters, OutputProvider outputProvider) {
+	ILogTarget(List<LogFormatter> formatters, OutputProvider outputProvider, int minimumImportance) {
 		this.messages = new LinkedBlockingQueue<>();
 		this.formatters = formatters;
 		this.outputProvider = outputProvider;
-		shouldClose = false;
+		this.minimumImportance = minimumImportance;
+		this.shouldClose = false;
 	}
 	
 	@Override
@@ -38,7 +40,7 @@ final class ILogTarget implements Runnable, AutoCloseable {
 			} catch (InterruptedException e) {
 				e.printStackTrace();
 			}
-			if (logMessage != null) {
+			if (logMessage != null && logMessage.getLevel().getImportance() > minimumImportance) {
 				// Write to the OutputStream and flush
 				try {
 					messageBuilder.setLength(0);
