@@ -1,6 +1,12 @@
 package io.github.xnovo3000.sjll.logger;
 
+import io.github.xnovo3000.sjll.exception.LoggerNotFoundException;
+
 public interface Logger {
+	
+	static Logger getLogger(String key) throws LoggerNotFoundException {
+		return ILogFactory.INSTANCE.getLogger(key);
+	}
 	
 	void d(String caller, Object obj);
 	

@@ -4,13 +4,13 @@ import io.github.xnovo3000.sjll.outputprovider.OutputProvider;
 
 import java.util.List;
 
-final class ShutdownHookThread extends Thread {
+final class IShutdownHookThread extends Thread {
 	
 	private final List<AutoCloseable> activeTargets;
 	private final List<Thread> activeThreads;
 	private final List<OutputProvider> activeProviders;
 	
-	public ShutdownHookThread(List<AutoCloseable> activeTargets, List<Thread> activeThreads, List<OutputProvider> activeProviders) {
+	public IShutdownHookThread(List<AutoCloseable> activeTargets, List<Thread> activeThreads, List<OutputProvider> activeProviders) {
 		this.activeTargets = activeTargets;
 		this.activeThreads = activeThreads;
 		this.activeProviders = activeProviders;
