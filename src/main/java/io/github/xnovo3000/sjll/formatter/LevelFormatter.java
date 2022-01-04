@@ -6,7 +6,7 @@ public class LevelFormatter implements LogFormatter {
 	
 	@Override
 	public void onFormat(StringBuilder current, LogMessage logMessage) {
-		current.append(logMessage.getLevel().getFirstChar());
+		current.append(logMessage.getLevel().getName());
 	}
 	
 }
