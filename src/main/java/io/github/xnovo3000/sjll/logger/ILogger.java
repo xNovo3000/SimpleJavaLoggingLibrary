@@ -7,7 +7,7 @@ import io.github.xnovo3000.sjll.data.Null;
 import java.util.List;
 import java.util.Objects;
 
-final class ILogger implements Logger {
+public final class ILogger implements Logger {
 	
 	private final List<ILogTarget> targets;
 	
