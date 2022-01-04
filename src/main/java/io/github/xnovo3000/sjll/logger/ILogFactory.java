@@ -19,7 +19,7 @@ import java.io.InputStreamReader;
 import java.util.*;
 import java.util.stream.Collectors;
 
-public final class LogFactory {
+final class ILogFactory {
 	
 	/* Static fields and performance optimizations */
 	
@@ -34,26 +34,22 @@ public final class LogFactory {
 	
 	public static final String CONFIGURATION_FILE_PATH = "SJLL/Config.json";
 	
-	/* Singleton pattern */
+	/* Singleton class instance */
 	
-	private static final LogFactory INSTANCE = new LogFactory();
-	
-	public static synchronized Logger getLogger(String key) throws LoggerNotFoundException {
-		return INSTANCE.getLoggerImpl(key);
-	}
+	public static final ILogFactory INSTANCE = new ILogFactory();
 	
 	/* Class implementation */
 	
-	private final Map<String, IILogTarget> logTargets = new HashMap<>();
-	private final Map<String, IILogger> loggers = new HashMap<>();
+	private final Map<String, ILogTarget> logTargets = new HashMap<>();
+	private final Map<String, ILogger> loggers = new HashMap<>();
 	private final Set<OutputProvider> outputProviders = new HashSet<>();
 	private final List<Thread> threads = new ArrayList<>();
 	
 	private boolean initialized = false;
 	
-	private LogFactory() {}
+	private ILogFactory() {}
 	
-	private Logger getLoggerImpl(String key) throws LoggerNotFoundException {
+	public synchronized Logger getLogger(String key) throws LoggerNotFoundException {
 		// Initialize if not. This method is called on static synchronized: no problem at all!
 		if (!initialized) {
 			initialize();
@@ -86,13 +82,13 @@ public final class LogFactory {
 			generateLogger((JSONObject) loggerObject);
 		}
 		// Start the services
-		for (Map.Entry<String, IILogTarget> entry : logTargets.entrySet()) {
+		for (Map.Entry<String, ILogTarget> entry : logTargets.entrySet()) {
 			Thread t1 = new Thread(entry.getValue(), entry.getKey() + "Thread");
 			t1.start();
 			threads.add(t1);
 		}
 		// Set shutdown hook for stopping threads and closing targets
-		Runtime.getRuntime().addShutdownHook(new ShutdownHookThread(new ArrayList<>(
+		Runtime.getRuntime().addShutdownHook(new IShutdownHookThread(new ArrayList<>(
 			logTargets.values()),threads, new ArrayList<>(outputProviders)));
 		// Set initialized
 		initialized = true;
@@ -101,7 +97,7 @@ public final class LogFactory {
 	private JSONObject loadConfiguration() throws ConfigurationFileNotFoundException, JSONException {
 		InputStream inputStream = getClass().getClassLoader().getResourceAsStream(CONFIGURATION_FILE_PATH);
 		if (inputStream == null) {
-			throw new ConfigurationFileNotFoundException();
+			throw new ConfigurationFileNotFoundException(CONFIGURATION_FILE_PATH);
 		}
 		String stringJson = new BufferedReader(new InputStreamReader(inputStream))
 			.lines().parallel().collect(Collectors.joining("\n"));
@@ -136,24 +132,24 @@ public final class LogFactory {
 		// Put the OutputProvider inside the set
 		outputProviders.add(outputProvider);
 		// Generate the formats
-		logTargets.put(name, new IILogTarget(getFormattersByString(format), outputProvider));
+		logTargets.put(name, new ILogTarget(getFormattersByString(format), outputProvider));
 	}
 	
 	private void generateLogger(JSONObject jsonLoggerObject) throws ConfigurationErrorException, JSONException {
 		String name = jsonLoggerObject.getString("name");
-		List<IILogTarget> loggerTargets = new ArrayList<>();
+		List<ILogTarget> loggerTargets = new ArrayList<>();
 		JSONArray jsonTargetStringArray = jsonLoggerObject.getJSONArray("targets");
 		for (Object jsonTargetName : jsonTargetStringArray) {
 			if (jsonTargetName.getClass() != String.class) {
 				throw new ConfigurationErrorException("Targets in the logger \"" + name + "\" must be strings");
 			}
-			IILogTarget logTargetFound = logTargets.get(jsonTargetName);
+			ILogTarget logTargetFound = logTargets.get(jsonTargetName);
 			if (logTargetFound == null) {
 				throw new TargetNotFoundException((String) jsonTargetName);
 			}
 			loggerTargets.add(logTargetFound);
 		}
-		loggers.put(name, new IILogger(loggerTargets));
+		loggers.put(name, new ILogger(loggerTargets));
 	}
 	
 	private List<LogFormatter> getFormattersByString(String value) {

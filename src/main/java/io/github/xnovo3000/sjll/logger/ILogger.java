@@ -7,11 +7,11 @@ import io.github.xnovo3000.sjll.data.Null;
 import java.util.List;
 import java.util.Objects;
 
-class IILogger implements Logger {
+final class ILogger implements Logger {
 	
-	private final List<IILogTarget> targets;
+	private final List<ILogTarget> targets;
 	
-	public IILogger(List<IILogTarget> targets) {
+	public ILogger(List<ILogTarget> targets) {
 		this.targets = targets;
 	}
 	
@@ -41,7 +41,7 @@ class IILogger implements Logger {
 			obj = Null.INSTANCE;
 		}
 		LogMessage logMessage = new LogMessage(level, caller, obj.toString());
-		for (IILogTarget target : targets) {
+		for (ILogTarget target : targets) {
 			target.put(logMessage);
 		}
 	}
