@@ -2,7 +2,6 @@ package io.github.xnovo3000.sjll.logger;
 
 import io.github.xnovo3000.sjll.data.Level;
 import io.github.xnovo3000.sjll.data.LogMessage;
-import io.github.xnovo3000.sjll.data.Null;
 
 import java.util.List;
 import java.util.Objects;
@@ -38,7 +37,7 @@ public final class ILogger implements Logger {
 	private void internalLogImpl(Level level, String caller, Object obj) {
 		Objects.requireNonNull(caller);
 		if (obj == null) {
-			obj = Null.INSTANCE;
+			obj = "null";
 		}
 		LogMessage logMessage = new LogMessage(level, caller, obj.toString());
 		for (ILogTarget target : targets) {
