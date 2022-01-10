@@ -3,6 +3,12 @@ package io.github.xnovo3000.sjll.data;
 import java.time.Instant;
 import java.util.Objects;
 
+/**
+ * <p>A log message; contains all information about the message logged</p>
+ *
+ * @since 1.0
+ * @author xNovo3000
+ */
 public final class LogMessage {
 	
 	private final Level level;
@@ -11,6 +17,13 @@ public final class LogMessage {
 	private final String threadName;
 	private final Instant timestamp;
 	
+	/**
+	 * <p>Creates a new message</p>
+	 *
+	 * @param level The level of the message
+	 * @param caller The caller of the message
+	 * @param message The message
+	 */
 	public LogMessage(Level level, String caller, String message) {
 		this.level = level;
 		this.caller = caller;
@@ -19,22 +32,37 @@ public final class LogMessage {
 		this.timestamp = Instant.now();
 	}
 	
+	/**
+	 * @return The level of the message
+	 */
 	public Level getLevel() {
 		return level;
 	}
 	
+	/**
+	 * @return The caller of the message
+	 */
 	public String getCaller() {
 		return caller;
 	}
 	
+	/**
+	 * @return The message
+	 */
 	public String getMessage() {
 		return message;
 	}
 	
+	/**
+	 * @return The name of the thread generated the message
+	 */
 	public String getThreadName() {
 		return threadName;
 	}
 	
+	/**
+	 * @return When the message was created
+	 */
 	public Instant getTimestamp() {
 		return timestamp;
 	}

@@ -3,11 +3,10 @@ package io.github.xnovo3000.sjll.logger;
 import io.github.xnovo3000.sjll.exception.LoggerNotFoundException;
 
 /**
- * <p></p>
+ * <p>Used to log messages</p>
  *
  * @since 1.0
  * @author xNovo3000
- * @version 1.0
  */
 public interface Logger {
 	
