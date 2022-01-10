@@ -2,6 +2,12 @@ package io.github.xnovo3000.sjll.outputprovider;
 
 import java.io.OutputStream;
 
+/**
+ * <p>Console output implementation of the provider</p>
+ *
+ * @since 1.0
+ * @author xNovo3000
+ */
 public class ConsoleOutputProvider implements OutputProvider {
 	
 	@Override

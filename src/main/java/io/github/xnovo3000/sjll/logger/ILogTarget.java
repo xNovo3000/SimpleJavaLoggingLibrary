@@ -11,6 +11,12 @@ import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
 
+/**
+ * <p>Standard implementation of the log target</p>
+ *
+ * @since 1.0
+ * @author xNovo3000
+ */
 public final class ILogTarget implements LogTarget {
 	
 	private final BlockingQueue<LogMessage> messages;

@@ -5,6 +5,12 @@ import java.io.FileOutputStream;
 import java.io.OutputStream;
 import java.util.Objects;
 
+/**
+ * <p>File output implementation of the provider</p>
+ *
+ * @since 1.0
+ * @author xNovo3000
+ */
 public class FileOutputProvider implements OutputProvider {
 	
 	private final FileOutputStream fileOutputStream;

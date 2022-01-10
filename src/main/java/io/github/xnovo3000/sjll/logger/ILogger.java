@@ -4,8 +4,13 @@ import io.github.xnovo3000.sjll.data.Level;
 import io.github.xnovo3000.sjll.data.LogMessage;
 
 import java.util.List;
-import java.util.Objects;
 
+/**
+ * <p>Standard implementation of the logger</p>
+ *
+ * @since 1.0
+ * @author xNovo3000
+ */
 public final class ILogger implements Logger {
 	
 	private static final String NULL_STRING = "null";
@@ -35,9 +40,11 @@ public final class ILogger implements Logger {
 	public void e(String caller, Object obj) {
 		internalLogImpl(Level.ERROR, caller, obj);
 	}
-	
+
 	private void internalLogImpl(Level level, String caller, Object obj) {
-		Objects.requireNonNull(caller);
+		if (caller == null) {
+			caller = NULL_STRING;
+		}
 		if (obj == null) {
 			obj = NULL_STRING;
 		}
