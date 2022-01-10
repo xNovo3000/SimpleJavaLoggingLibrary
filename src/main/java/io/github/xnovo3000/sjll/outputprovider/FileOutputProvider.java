@@ -29,7 +29,7 @@ public class FileOutputProvider implements OutputProvider {
 		}
 		String fullPath = fullPathBuilder.toString();
 		File folders = new File(fullPath);
-		if (!folders.mkdirs()) {
+		if (!folders.exists() && !folders.mkdirs()) {
 			throw new FileNotFoundException("Cannot create folder " + folders);
 		}
 		fileOutputStream = new FileOutputStream(filePath, true);

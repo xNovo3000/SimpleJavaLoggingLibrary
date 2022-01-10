@@ -2,15 +2,20 @@
   "loggers": [
     {
       "name": "Default",
-      "targets": ["Default"]
+      "targets": ["Default", "Default2"]
     }
   ],
   "targets": [
     {
       "name": "Default",
+      "type": "console",
+      "format": "%d [%l] - OVERRIDE - %c: %m\n"
+    },
+    {
+      "name": "Default2",
       "type": "file",
       "filename": "./logs/log1.txt",
-      "format": "%d [%l] - OVERRIDE - %c: %m\n"
+      "format": "%d [%l] - FILE - %c: %m\n"
     }
   ]
 }
