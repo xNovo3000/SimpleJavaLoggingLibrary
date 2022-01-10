@@ -3,7 +3,7 @@ package io.github.xnovo3000.sjll.data;
 import java.time.Instant;
 import java.util.Objects;
 
-public class LogMessage {
+public final class LogMessage {
 	
 	private final Level level;
 	private final String caller;

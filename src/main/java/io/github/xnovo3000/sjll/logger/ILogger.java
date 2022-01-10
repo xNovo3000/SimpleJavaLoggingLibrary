@@ -8,9 +8,11 @@ import java.util.Objects;
 
 public final class ILogger implements Logger {
 	
-	private final List<ILogTarget> targets;
+	private static final String NULL_STRING = "null";
 	
-	public ILogger(List<ILogTarget> targets) {
+	private final List<LogTarget> targets;
+	
+	ILogger(List<LogTarget> targets) {
 		this.targets = targets;
 	}
 	
@@ -37,11 +39,11 @@ public final class ILogger implements Logger {
 	private void internalLogImpl(Level level, String caller, Object obj) {
 		Objects.requireNonNull(caller);
 		if (obj == null) {
-			obj = "null";
+			obj = NULL_STRING;
 		}
 		LogMessage logMessage = new LogMessage(level, caller, obj.toString());
-		for (ILogTarget target : targets) {
-			target.put(logMessage);
+		for (LogTarget target : targets) {
+			target.enqueue(logMessage);
 		}
 	}
 	

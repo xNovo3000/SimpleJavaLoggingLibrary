@@ -1,5 +1,6 @@
 package io.github.xnovo3000.sjll.logger;
 
+import io.github.xnovo3000.sjll.data.BooleanFlag;
 import io.github.xnovo3000.sjll.data.LogMessage;
 import io.github.xnovo3000.sjll.formatter.LogFormatter;
 import io.github.xnovo3000.sjll.outputprovider.OutputProvider;
@@ -10,21 +11,20 @@ import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
 
-final class ILogTarget implements Runnable, AutoCloseable {
+public final class ILogTarget implements LogTarget {
 	
 	private final BlockingQueue<LogMessage> messages;
 	private final List<LogFormatter> formatters;
 	private final OutputProvider outputProvider;
+	private final BooleanFlag shouldClose;
 	private final int minimumImportance;
-	
-	private boolean shouldClose;
 	
 	ILogTarget(List<LogFormatter> formatters, OutputProvider outputProvider, int minimumImportance) {
 		this.messages = new LinkedBlockingQueue<>();
 		this.formatters = formatters;
 		this.outputProvider = outputProvider;
+		this.shouldClose = new BooleanFlag();
 		this.minimumImportance = minimumImportance;
-		this.shouldClose = false;
 	}
 	
 	@Override
@@ -32,7 +32,7 @@ final class ILogTarget implements Runnable, AutoCloseable {
 		// Caches
 		final StringBuilder messageBuilder = new StringBuilder();
 		// Management
-		while (!shouldClose) {
+		while (shouldClose.getValue() || !messages.isEmpty()) {
 			// Get the message if exists
 			LogMessage logMessage = null;
 			try {
@@ -48,21 +48,31 @@ final class ILogTarget implements Runnable, AutoCloseable {
 						formatter.onFormat(messageBuilder, logMessage);
 					}
 					outputProvider.getOutputStream().write(messageBuilder.toString().getBytes());
-					outputProvider.getOutputStream().flush();
 				} catch (IOException e) {
 					e.printStackTrace();
 				}
 			}
 		}
+		// Flush on close
+		try {
+			outputProvider.getOutputStream().flush();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 	}
 	
-	public void put(LogMessage logMessage) {
-		messages.add(logMessage);
+	@Override
+	public void enqueue(LogMessage logMessage) {
+		// Enqueue only if not closed
+		if (shouldClose.getValue()) {
+			messages.add(logMessage);
+		}
 	}
 	
 	@Override
 	public void close() {
-		shouldClose = true;
+		// Set the close flag
+		shouldClose.setFlag();
 	}
 	
 }

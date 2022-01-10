@@ -19,7 +19,7 @@ import java.io.InputStreamReader;
 import java.util.*;
 import java.util.stream.Collectors;
 
-final class ILogFactory {
+final class PLogFactory {
 	
 	/* Static fields and performance optimizations */
 	
@@ -36,18 +36,18 @@ final class ILogFactory {
 	
 	/* Singleton class instance */
 	
-	public static final ILogFactory INSTANCE = new ILogFactory();
+	public static final PLogFactory INSTANCE = new PLogFactory();
 	
 	/* Class implementation */
 	
-	private final Map<String, ILogTarget> logTargets = new HashMap<>();
-	private final Map<String, ILogger> loggers = new HashMap<>();
+	private final Map<String, LogTarget> logTargets = new HashMap<>();
+	private final Map<String, Logger> loggers = new HashMap<>();
 	private final Set<OutputProvider> outputProviders = new HashSet<>();
 	private final List<Thread> threads = new ArrayList<>();
 	
 	private boolean initialized = false;
 	
-	private ILogFactory() {}
+	private PLogFactory() {}
 	
 	public synchronized Logger getLogger(String key) throws LoggerNotFoundException {
 		// Initialize if not. This method is called on static synchronized: no problem at all!
@@ -82,13 +82,13 @@ final class ILogFactory {
 			generateLogger((JSONObject) loggerObject);
 		}
 		// Start the services
-		for (Map.Entry<String, ILogTarget> entry : logTargets.entrySet()) {
+		for (Map.Entry<String, LogTarget> entry : logTargets.entrySet()) {
 			Thread t1 = new Thread(entry.getValue(), entry.getKey() + "Thread");
 			t1.start();
 			threads.add(t1);
 		}
 		// Set shutdown hook for stopping threads and closing targets
-		Runtime.getRuntime().addShutdownHook(new IShutdownHookThread(new ArrayList<>(
+		Runtime.getRuntime().addShutdownHook(new PShutdownHookThread(new ArrayList<>(
 			logTargets.values()),threads, new ArrayList<>(outputProviders)));
 		// Set initialized
 		initialized = true;
@@ -143,13 +143,13 @@ final class ILogFactory {
 	
 	private void generateLogger(JSONObject jsonLoggerObject) throws ConfigurationErrorException, JSONException {
 		String name = jsonLoggerObject.getString("name");
-		List<ILogTarget> loggerTargets = new ArrayList<>();
+		List<LogTarget> loggerTargets = new ArrayList<>();
 		JSONArray jsonTargetStringArray = jsonLoggerObject.getJSONArray("targets");
 		for (Object jsonTargetName : jsonTargetStringArray) {
 			if (jsonTargetName.getClass() != String.class) {
 				throw new ConfigurationErrorException("Targets in the logger \"" + name + "\" must be strings");
 			}
-			ILogTarget logTargetFound = logTargets.get(jsonTargetName);
+			LogTarget logTargetFound = logTargets.get(jsonTargetName);
 			if (logTargetFound == null) {
 				throw new TargetNotFoundException((String) jsonTargetName);
 			}
