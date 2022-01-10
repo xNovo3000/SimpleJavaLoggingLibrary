@@ -8,6 +8,11 @@ package io.github.xnovo3000.sjll.exception;
  */
 public class ConfigurationFileNotFoundException extends RuntimeException {
 	
+	/**
+	 * <p>Default constructor</p>
+	 *
+	 * @param filePath The path of the not found file
+	 */
 	public ConfigurationFileNotFoundException(String filePath) {
 		super("The configuration file located at \"" + filePath + "\" does not exists");
 	}

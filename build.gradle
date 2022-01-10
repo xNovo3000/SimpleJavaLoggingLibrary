@@ -3,18 +3,20 @@ plugins {
 }
 
 group 'io.github.xnovo3000'
-version '0.2.0'
+version '1.0.0'
 
 repositories {
     mavenCentral()
 }
 
 java {
-    toolchain {
-        languageVersion.set(JavaLanguageVersion.of(8))
-    }
     withSourcesJar()
     withJavadocJar()
+}
+
+compileJava {
+    sourceCompatibility = 8
+    targetCompatibility = 8
 }
 
 dependencies {

@@ -12,6 +12,11 @@ public class StaticStringFormatter implements LogFormatter {
 	
 	private final String string;
 	
+	/**
+	 * <p>Default constructor</p>
+	 *
+	 * @param value The value of the String
+	 */
 	public StaticStringFormatter(String value) {
 		this.string = value;
 	}

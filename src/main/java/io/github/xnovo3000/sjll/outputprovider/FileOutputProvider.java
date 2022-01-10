@@ -15,6 +15,11 @@ public class FileOutputProvider implements OutputProvider {
 	
 	private final FileOutputStream fileOutputStream;
 	
+	/**
+	 * <p>Default constructor</p>
+	 *
+	 * @param filePath The path of the output file
+	 */
 	public FileOutputProvider(String filePath) throws FileNotFoundException {
 		fileOutputStream = new FileOutputStream(filePath, true);
 	}
