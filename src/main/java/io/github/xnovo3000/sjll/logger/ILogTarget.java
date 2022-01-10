@@ -45,7 +45,7 @@ public final class ILogTarget implements LogTarget {
 				try {
 					messageBuilder.setLength(0);
 					for (LogFormatter formatter : formatters) {
-						formatter.onFormat(messageBuilder, logMessage);
+						formatter.format(messageBuilder, logMessage);
 					}
 					outputProvider.getOutputStream().write(messageBuilder.toString().getBytes());
 				} catch (IOException e) {

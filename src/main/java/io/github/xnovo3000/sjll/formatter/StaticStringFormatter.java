@@ -2,6 +2,12 @@ package io.github.xnovo3000.sjll.formatter;
 
 import io.github.xnovo3000.sjll.data.LogMessage;
 
+/**
+ * <p>Appends a string</p>
+ *
+ * @since 1.0
+ * @author xNovo3000
+ */
 public class StaticStringFormatter implements LogFormatter {
 	
 	private final String string;
@@ -11,7 +17,7 @@ public class StaticStringFormatter implements LogFormatter {
 	}
 	
 	@Override
-	public void onFormat(StringBuilder current, LogMessage logMessage) {
+	public void format(StringBuilder current, LogMessage logMessage) {
 		current.append(string);
 	}
 	

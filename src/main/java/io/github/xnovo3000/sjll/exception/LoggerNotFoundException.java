@@ -1,5 +1,11 @@
 package io.github.xnovo3000.sjll.exception;
 
+/**
+ * <p>Thrown when the logger has not been found</p>
+ *
+ * @since 1.0
+ * @author xNovo3000
+ */
 public class LoggerNotFoundException extends RuntimeException {
 	
 	public LoggerNotFoundException(String key) {
