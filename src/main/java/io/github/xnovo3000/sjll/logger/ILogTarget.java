@@ -38,7 +38,7 @@ public final class ILogTarget implements LogTarget {
 		// Caches
 		final StringBuilder messageBuilder = new StringBuilder();
 		// Management
-		while (shouldClose.getValue() || !messages.isEmpty()) {
+		while (!shouldClose.getValue() || !messages.isEmpty()) {
 			// Get the message if exists
 			LogMessage logMessage = null;
 			try {
@@ -70,7 +70,7 @@ public final class ILogTarget implements LogTarget {
 	@Override
 	public void enqueue(LogMessage logMessage) {
 		// Enqueue only if not closed
-		if (shouldClose.getValue()) {
+		if (!shouldClose.getValue()) {
 			messages.add(logMessage);
 		}
 	}
