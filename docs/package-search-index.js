@@ -1,0 +1,1 @@
+packageSearchIndex = [{"l":"All Packages","u":"allpackages-index.html"},{"l":"io.github.xnovo3000.sjll.data"},{"l":"io.github.xnovo3000.sjll.exception"},{"l":"io.github.xnovo3000.sjll.formatter"},{"l":"io.github.xnovo3000.sjll.logger"},{"l":"io.github.xnovo3000.sjll.outputprovider"}];updateSearchResults();
