@@ -11,7 +11,7 @@ class FirstTests {
 
 	@Test
 	void firstTests() throws InterruptedException {
-		Logger logger = Logger.getLogger("MainLogger");
+		Logger logger = Logger.getLogger("Default");
 		logger.d("Caller", "Custom message");
 		logger.i("Caller", "Custom message");
 		logger.e("Caller", "Custom message");
@@ -26,7 +26,7 @@ class FirstTests {
 	
 	@Test
 	void doMultithreadedTests() {
-		Logger logger = Logger.getLogger("MainLogger");
+		Logger logger = Logger.getLogger("Default");
 		// Create the threads
 		List<Thread> ts = new ArrayList<>();
 		for (int i = 0; i < 20; i++) {
