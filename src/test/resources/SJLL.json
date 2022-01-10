@@ -8,7 +8,8 @@
   "targets": [
     {
       "name": "Default",
-      "type": "console",
+      "type": "file",
+      "filename": "./logs/log1.txt",
       "format": "%d [%l] - OVERRIDE - %c: %m\n"
     }
   ]

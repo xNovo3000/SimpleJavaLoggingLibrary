@@ -1,5 +1,6 @@
 package io.github.xnovo3000.sjll.outputprovider;
 
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.OutputStream;
@@ -21,6 +22,16 @@ public class FileOutputProvider implements OutputProvider {
 	 * @param filePath The path of the output file
 	 */
 	public FileOutputProvider(String filePath) throws FileNotFoundException {
+		String[] paths = filePath.split("/");
+		StringBuilder fullPathBuilder = new StringBuilder();
+		for (int i = 0; i < paths.length - 1; i++) {
+			fullPathBuilder.append(paths[i]).append("/");
+		}
+		String fullPath = fullPathBuilder.toString();
+		File folders = new File(fullPath);
+		if (!folders.mkdirs()) {
+			throw new FileNotFoundException("Cannot create folder " + folders);
+		}
 		fileOutputStream = new FileOutputStream(filePath, true);
 	}
 	
