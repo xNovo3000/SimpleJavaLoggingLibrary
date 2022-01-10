@@ -32,7 +32,7 @@ final class PLogFactory {
 	
 	private static final OutputProvider OUTPUT_PROVIDER_CONSOLE = new ConsoleOutputProvider();
 	
-	public static final String CONFIGURATION_FILE_PATH = "SJLL/Config.json";
+	public static final String CONFIGURATION_FILE_PATH = "SJLL.json";
 	
 	/* Singleton class instance */
 	
