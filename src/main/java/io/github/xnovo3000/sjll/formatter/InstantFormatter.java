@@ -15,7 +15,7 @@ import java.util.Locale;
 public class InstantFormatter implements LogFormatter {
 	
 	private static final DateTimeFormatter FORMATTER = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss.SSS")
-		.withLocale(Locale.getDefault()).withZone(ZoneId.of("UTC"));
+		.withLocale(Locale.getDefault()).withZone(ZoneId.systemDefault());
 	
 	@Override
 	public void format(StringBuilder current, LogMessage logMessage) {

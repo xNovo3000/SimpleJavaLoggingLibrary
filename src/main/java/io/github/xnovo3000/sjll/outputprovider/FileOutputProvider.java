@@ -20,6 +20,7 @@ public class FileOutputProvider implements OutputProvider {
 	 * <p>Default constructor</p>
 	 *
 	 * @param filePath The path of the output file
+	 * @throws FileNotFoundException When the file cannot be written or opened
 	 */
 	public FileOutputProvider(String filePath) throws FileNotFoundException {
 		String[] paths = filePath.split("/");
