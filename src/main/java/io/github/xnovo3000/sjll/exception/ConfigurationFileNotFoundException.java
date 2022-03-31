@@ -17,4 +17,11 @@ public class ConfigurationFileNotFoundException extends RuntimeException {
 		super("The configuration file located at \"" + filePath + "\" does not exists");
 	}
 	
+	/**
+	 * <p>New constructor</p>
+	 */
+	public ConfigurationFileNotFoundException() {
+		super("The configuration file does not exists");
+	}
+	
 }
