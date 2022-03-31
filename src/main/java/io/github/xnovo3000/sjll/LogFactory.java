@@ -4,11 +4,13 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
 import io.github.xnovo3000.sjll.exception.ConfigurationErrorException;
 import io.github.xnovo3000.sjll.exception.ConfigurationFileNotFoundException;
+import io.github.xnovo3000.sjll.implementation.v1.ILogFactory;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -23,18 +25,18 @@ public abstract class LogFactory {
 		if (FACTORY == null) {
 			// Load configurations
 			Map<?, ?> configurations = getConfigurations();
-			// Try to load custom logger if exists
+			// Try to load custom logger if exists. Load default if not
 			try {
 				FACTORY = getLogFactory(configurations);
 			} catch (Exception e) {
-				// TODO: Instantiate to the default class
+				FACTORY = new ILogFactory(configurations);
 			}
 		}
 		// Return the desired logger
 		return FACTORY.getInnerLogger(name);
 	}
 	
-	public static synchronized Logger getLogger(Class<?> clazz) {
+	public static Logger getLogger(Class<?> clazz) {
 		return getLogger(clazz.getSimpleName());
 	}
 	
@@ -64,19 +66,29 @@ public abstract class LogFactory {
 	/* Class definitions */
 	
 	private final Map<?, ?> configurations;
+	protected final Map<String, Logger> loggers;
+	protected final Map<String, Logger> logTargets;
+	protected final Map<String, Logger> logFormatters;
 	
 	protected LogFactory(Map<?, ?> configurations) {
 		this.configurations = configurations;
+		this.loggers = new HashMap<>();
+		this.logTargets = new HashMap<>();
+		this.logFormatters = new HashMap<>();
 	}
 	
-	protected abstract Logger createLogger(String name);
+	protected abstract Logger createLogger(Map<?, ?> configuration);
 	
-	protected abstract LogTarget createLogTarget(String name);
+	protected abstract LogTarget createLogTarget(Map<?, ?> configuration);
 	
 	protected abstract List<LogFormatter> createLogFormatters(String formatString);
 	
 	public final Logger getInnerLogger(String name) {
-		return null;
+		if (loggers.containsKey(name)) {
+			return loggers.get(name);
+		} else {
+			return loggers.get("default");
+		}
 	}
 	
 }
