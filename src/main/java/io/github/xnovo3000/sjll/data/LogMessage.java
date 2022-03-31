@@ -72,13 +72,27 @@ public final class LogMessage {
 		if (this == o) return true;
 		if (o == null || getClass() != o.getClass()) return false;
 		LogMessage that = (LogMessage) o;
-		return level == that.level && caller.equals(that.caller) && message.equals(that.message) &&
-			threadName.equals(that.threadName) && timestamp.equals(that.timestamp);
+		return level == that.level &&
+			Objects.equals(caller, that.caller) &&
+			Objects.equals(message, that.message) &&
+			Objects.equals(threadName, that.threadName) &&
+			Objects.equals(timestamp, that.timestamp);
 	}
 	
 	@Override
 	public int hashCode() {
 		return Objects.hash(level, caller, message, threadName, timestamp);
+	}
+	
+	@Override
+	public String toString() {
+		return "LogMessage{" +
+			"level=" + level +
+			", caller='" + caller + '\'' +
+			", message='" + message + '\'' +
+			", threadName='" + threadName + '\'' +
+			", timestamp=" + timestamp +
+			'}';
 	}
 	
 }

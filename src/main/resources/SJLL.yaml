@@ -1,0 +1,8 @@
+loggers:
+  - name: Default
+    targets:
+      - name: Default
+targets:
+  - name: Default
+    type: console
+    format: "%d [%l] %c: %m\n"

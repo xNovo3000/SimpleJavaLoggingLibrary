@@ -12,7 +12,7 @@ public class SingleCharacterLevelFormatter implements LogFormatter {
 	
 	@Override
 	public void format(StringBuilder current, LogMessage logMessage) {
-		current.append(logMessage.getLevel().getFirstChar());
+		current.append(logMessage.getLevel().getSingleChar());
 	}
 	
 }

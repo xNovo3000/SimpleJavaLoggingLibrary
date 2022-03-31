@@ -26,18 +26,20 @@ public enum Level {
 	ERROR("ERROR", 40);
 	
 	private final String name;
+	private final char singleChar;
 	private final int importance;
 	
 	Level(String name, int importance) {
 		this.name = name;
+		this.singleChar = name.charAt(0);
 		this.importance = importance;
 	}
 	
 	/**
 	 * @return The first character of the enum name
 	 */
-	public char getFirstChar() {
-		return name.charAt(0);
+	public char getSingleChar() {
+		return singleChar;
 	}
 	
 	/**
@@ -56,7 +58,11 @@ public enum Level {
 	
 	@Override
 	public String toString() {
-		return name;
+		return "Level{" +
+			"name='" + name + '\'' +
+			", singleChar=" + singleChar +
+			", importance=" + importance +
+			'}';
 	}
 	
 }
