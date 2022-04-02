@@ -19,6 +19,7 @@ public class ILogProvider extends LogProvider {
 	
 	private final List<ILogger> loggers;
 	private final Map<String, ILogTarget> logTargets;
+	private final List<OutputProvider> outputProviders;
 	
 	public ILogProvider(Map<?, ?> configurations) {
 		// Call super
@@ -26,9 +27,11 @@ public class ILogProvider extends LogProvider {
 		// Generate containers
 		this.loggers = new ArrayList<>();
 		this.logTargets = new HashMap<>();
+		this.outputProviders = new ArrayList<>();
 		// Initialize
 		generateLogTargets();
 		generateLoggers();
+		addShutdownHook();
 	}
 	
 	private void generateLogTargets() {
@@ -71,6 +74,9 @@ public class ILogProvider extends LogProvider {
 				default:
 					throw new LogConfigurationError("Target '" + name + "' -> Provider '" + provider + "' is invalid");
 			}
+			if (!outputProviders.contains(outputProvider)) {
+				outputProviders.add(outputProvider);
+			}
 			// Add the target to the list
 			logTargets.put(name, new ILogTarget(formats, outputProvider, level));
 		}
@@ -95,6 +101,10 @@ public class ILogProvider extends LogProvider {
 			// Push to the ArrayList
 			loggers.add(new ILogger(targets, level, name));
 		}
+	}
+	
+	private void addShutdownHook() {
+		Runtime.getRuntime().addShutdownHook(new IShutdownHook(logTargets, outputProviders));
 	}
 	
 	/* TODO: Create better formatter generator */
