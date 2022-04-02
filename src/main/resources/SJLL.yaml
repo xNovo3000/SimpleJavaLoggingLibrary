@@ -1,8 +1,16 @@
+provider: io.github.xnovo3000.implementation.v1.ILogProvider
 loggers:
-  - name: Default
+  - name: default
+    level: 10
     targets:
-      - name: Default
+      - name: Console
+  - name: TestClass
+    level: 10
+    targets:
+      - name: Console
 targets:
-  - name: Default
-    type: console
+  - name: Console
+    provider: console
+    socket: stdout
+    level: 20
     format: "%d [%l] %c: %m\n"
