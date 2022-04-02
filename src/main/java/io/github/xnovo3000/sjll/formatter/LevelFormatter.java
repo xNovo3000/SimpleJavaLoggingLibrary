@@ -10,6 +10,21 @@ import io.github.xnovo3000.sjll.data.LogMessage;
  */
 public class LevelFormatter implements LogFormatter {
 	
+	/* Singleton pattern */
+	
+	private static LevelFormatter levelFormatter;
+	
+	public static synchronized LevelFormatter getInstance() {
+		if (levelFormatter == null) {
+			levelFormatter = new LevelFormatter();
+		}
+		return levelFormatter;
+	}
+	
+	/* Class */
+	
+	private LevelFormatter() {}
+	
 	@Override
 	public void format(StringBuilder current, LogMessage logMessage) {
 		current.append(logMessage.getLevel().getName());

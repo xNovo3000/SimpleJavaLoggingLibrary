@@ -74,7 +74,7 @@ public enum Level {
 			.filter(level -> level.getImportance() == importance)
 			.findFirst()
 			.orElseThrow(() -> {
-				throw new LevelNotFoundError("The level"); // TODO:
+				throw new LevelNotFoundError("The level with importance '" + importance +  "' does not exists");
 			});
 	}
 	

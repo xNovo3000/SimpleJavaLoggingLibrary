@@ -23,12 +23,12 @@ final class PLogFactory {
 	
 	/* Static fields and performance optimizations */
 	
-	private static final LogFormatter FORMATTER_CALLER = new CallerFormatter();
-	private static final LogFormatter FORMATTER_INSTANT = new InstantFormatter();
-	private static final LogFormatter FORMATTER_MULTI_LEVEL = new LevelFormatter();
-	private static final LogFormatter FORMATTER_MESSAGE = new MessageFormatter();
-	private static final LogFormatter FORMATTER_SINGLE_LEVEL = new SingleCharacterLevelFormatter();
-	private static final LogFormatter FORMATTER_THREAD_NAME = new ThreadNameFormatter();
+	private static final LogFormatter FORMATTER_CALLER = CallerFormatter.getInstance();
+	private static final LogFormatter FORMATTER_INSTANT = InstantFormatter.getInstance();
+	private static final LogFormatter FORMATTER_MULTI_LEVEL = LevelFormatter.getInstance();
+	private static final LogFormatter FORMATTER_MESSAGE = MessageFormatter.getInstance();
+	private static final LogFormatter FORMATTER_SINGLE_LEVEL = SingleCharacterLevelFormatter.getInstance();
+	private static final LogFormatter FORMATTER_THREAD_NAME = ThreadNameFormatter.getInstance();
 	
 	private static final OutputProvider OUTPUT_PROVIDER_CONSOLE = ConsoleOutputProvider.getStdoutInstance();
 	

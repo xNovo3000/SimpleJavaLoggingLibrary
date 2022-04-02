@@ -3,6 +3,7 @@ package io.github.xnovo3000.sjll.implementation.v2;
 import io.github.xnovo3000.sjll.LogFormatter;
 import io.github.xnovo3000.sjll.LogProvider;
 import io.github.xnovo3000.sjll.Logger;
+import io.github.xnovo3000.sjll.data.Level;
 import io.github.xnovo3000.sjll.error.LogConfigurationError;
 import io.github.xnovo3000.sjll.outputprovider.ConsoleOutputProvider;
 import io.github.xnovo3000.sjll.outputprovider.FileOutputProvider;
@@ -42,10 +43,10 @@ public class ILogProvider extends LogProvider {
 			String name = (String) configurationTarget.get("name");
 			String provider = (String) configurationTarget.get("provider");
 			String socket = (String) configurationTarget.get("socket");
-			Integer level = (Integer) configurationTarget.get("level");
+			Level level = Level.fromImportance((Integer) configurationTarget.get("level"));
 			String format = (String) configurationTarget.get("format");
 			// Create the provider
-			OutputProvider outputProvider = null;
+			OutputProvider outputProvider;
 			switch (provider) {
 				case "console":
 					switch (socket) {
@@ -63,7 +64,7 @@ public class ILogProvider extends LogProvider {
 					try {
 						outputProvider = new FileOutputProvider(socket);
 					} catch (FileNotFoundException e) {
-						throw new LogConfigurationError("Target '" + name + "' -> Provider '" + provider + "' -> Socket '" + socket + "' cannot create/use this file");
+						throw new LogConfigurationError("Target '" + name + "' -> Provider '" + provider + "' -> Socket '" + socket + "': cannot create/use this file");
 					}
 					break;
 				case "network":
@@ -71,6 +72,8 @@ public class ILogProvider extends LogProvider {
 				default:
 					throw new LogConfigurationError("Target '" + name + "' -> Provider '" + provider + "' is invalid");
 			}
+			// Generate formats
+			
 		}
 	}
 	

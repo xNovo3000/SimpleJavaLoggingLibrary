@@ -10,6 +10,21 @@ import io.github.xnovo3000.sjll.data.LogMessage;
  */
 public class CallerFormatter implements LogFormatter {
 	
+	/* Singleton pattern */
+	
+	private static CallerFormatter callerFormatter;
+	
+	public static synchronized CallerFormatter getInstance() {
+		if (callerFormatter == null) {
+			callerFormatter = new CallerFormatter();
+		}
+		return callerFormatter;
+	}
+	
+	/* Class */
+	
+	private CallerFormatter() {}
+	
 	@Override
 	public void format(StringBuilder current, LogMessage logMessage) {
 		current.append(logMessage.getCaller());

@@ -14,8 +14,25 @@ import java.util.Locale;
  */
 public class InstantFormatter implements LogFormatter {
 	
-	private static final DateTimeFormatter FORMATTER = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss.SSS")
-		.withLocale(Locale.getDefault()).withZone(ZoneId.systemDefault());
+	/* Singleton pattern */
+	
+	private static InstantFormatter instantFormatter;
+	
+	public static synchronized InstantFormatter getInstance() {
+		if (instantFormatter == null) {
+			instantFormatter = new InstantFormatter();
+		}
+		return instantFormatter;
+	}
+	
+	/* Class */
+	
+	private final DateTimeFormatter FORMATTER;
+	
+	private InstantFormatter() {
+		FORMATTER = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss.SSS")
+			.withLocale(Locale.getDefault()).withZone(ZoneId.systemDefault());
+	}
 	
 	@Override
 	public void format(StringBuilder current, LogMessage logMessage) {

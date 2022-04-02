@@ -10,6 +10,21 @@ import io.github.xnovo3000.sjll.data.LogMessage;
  */
 public class ThreadNameFormatter implements LogFormatter {
 	
+	/* Singleton pattern */
+	
+	private static ThreadNameFormatter threadNameFormatter;
+	
+	public static synchronized ThreadNameFormatter getInstance() {
+		if (threadNameFormatter == null) {
+			threadNameFormatter = new ThreadNameFormatter();
+		}
+		return threadNameFormatter;
+	}
+	
+	/* Class */
+	
+	private ThreadNameFormatter() {}
+	
 	@Override
 	public void format(StringBuilder current, LogMessage logMessage) {
 		current.append(logMessage.getThreadName());
