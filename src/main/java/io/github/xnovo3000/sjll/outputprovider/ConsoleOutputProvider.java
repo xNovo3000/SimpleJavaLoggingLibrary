@@ -10,6 +10,21 @@ import java.io.OutputStream;
  */
 public class ConsoleOutputProvider implements OutputProvider {
 	
+	/* Singleton pattern */
+	
+	private static ConsoleOutputProvider consoleOutputProvider;
+	
+	public static synchronized ConsoleOutputProvider getInstance() {
+		if (consoleOutputProvider == null) {
+			consoleOutputProvider = new ConsoleOutputProvider();
+		}
+		return consoleOutputProvider;
+	}
+	
+	/* Class */
+	
+	private ConsoleOutputProvider() {}
+	
 	@Override
 	public OutputStream getOutputStream() {
 		return System.out;

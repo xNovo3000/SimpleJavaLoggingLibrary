@@ -30,7 +30,7 @@ final class PLogFactory {
 	private static final LogFormatter FORMATTER_SINGLE_LEVEL = new SingleCharacterLevelFormatter();
 	private static final LogFormatter FORMATTER_THREAD_NAME = new ThreadNameFormatter();
 	
-	private static final OutputProvider OUTPUT_PROVIDER_CONSOLE = new ConsoleOutputProvider();
+	private static final OutputProvider OUTPUT_PROVIDER_CONSOLE = ConsoleOutputProvider.getInstance();
 	
 	public static final String CONFIGURATION_FILE_PATH = "SJLL.json";
 	
