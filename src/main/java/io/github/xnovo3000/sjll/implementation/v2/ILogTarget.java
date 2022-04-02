@@ -1,8 +1,8 @@
 package io.github.xnovo3000.sjll.implementation.v2;
 
-import io.github.xnovo3000.sjll.LogFormatter;
 import io.github.xnovo3000.sjll.LogTarget;
 import io.github.xnovo3000.sjll.data.LogMessage;
+import io.github.xnovo3000.sjll.formatter.LogFormatter;
 import io.github.xnovo3000.sjll.outputprovider.OutputProvider;
 
 import java.io.IOException;
