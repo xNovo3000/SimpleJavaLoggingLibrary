@@ -1,6 +1,7 @@
 package io.github.xnovo3000.sjll.outputprovider;
 
 import java.io.OutputStream;
+import java.io.PrintStream;
 
 /**
  * <p>Console output implementation of the provider</p>
@@ -12,27 +13,39 @@ public class ConsoleOutputProvider implements OutputProvider {
 	
 	/* Singleton pattern */
 	
-	private static ConsoleOutputProvider consoleOutputProvider;
+	private static ConsoleOutputProvider stdoutOutputProvider;
+	private static ConsoleOutputProvider stderrOutputProvider;
 	
-	public static synchronized ConsoleOutputProvider getInstance() {
-		if (consoleOutputProvider == null) {
-			consoleOutputProvider = new ConsoleOutputProvider();
+	public static synchronized ConsoleOutputProvider getStdoutInstance() {
+		if (stdoutOutputProvider == null) {
+			stdoutOutputProvider = new ConsoleOutputProvider(System.out);
 		}
-		return consoleOutputProvider;
+		return stdoutOutputProvider;
+	}
+	
+	public static synchronized ConsoleOutputProvider getStderrInstance() {
+		if (stderrOutputProvider == null) {
+			stderrOutputProvider = new ConsoleOutputProvider(System.err);
+		}
+		return stderrOutputProvider;
 	}
 	
 	/* Class */
 	
-	private ConsoleOutputProvider() {}
+	private final PrintStream printStream;
+	
+	private ConsoleOutputProvider(PrintStream printStream) {
+		this.printStream = printStream;
+	}
 	
 	@Override
 	public OutputStream getOutputStream() {
-		return System.out;
+		return printStream;
 	}
 	
 	@Override
 	public void close() {
-		System.out.close();
+		printStream.close();
 	}
 	
 	@Override
@@ -42,7 +55,7 @@ public class ConsoleOutputProvider implements OutputProvider {
 	
 	@Override
 	public int hashCode() {
-		return getClass().hashCode();
+		return printStream.hashCode();
 	}
 	
 }

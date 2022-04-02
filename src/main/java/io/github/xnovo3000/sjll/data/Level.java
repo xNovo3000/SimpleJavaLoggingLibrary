@@ -1,5 +1,9 @@
 package io.github.xnovo3000.sjll.data;
 
+import io.github.xnovo3000.sjll.error.LevelNotFoundError;
+
+import java.util.Arrays;
+
 /**
  * <p>Indicates the severity of the log message</p>
  *
@@ -63,6 +67,15 @@ public enum Level {
 			", singleChar=" + singleChar +
 			", importance=" + importance +
 			'}';
+	}
+	
+	public static Level fromImportance(int importance) {
+		return Arrays.stream(Level.values())
+			.filter(level -> level.getImportance() == importance)
+			.findFirst()
+			.orElseThrow(() -> {
+				throw new LevelNotFoundError("The level"); // TODO:
+			});
 	}
 	
 }
