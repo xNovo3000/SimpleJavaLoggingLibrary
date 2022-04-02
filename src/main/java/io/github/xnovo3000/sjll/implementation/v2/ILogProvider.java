@@ -1,4 +1,4 @@
-package io.github.xnovo3000.sjll.implementation.v1;
+package io.github.xnovo3000.sjll.implementation.v2;
 
 import io.github.xnovo3000.sjll.LogProvider;
 import io.github.xnovo3000.sjll.Logger;

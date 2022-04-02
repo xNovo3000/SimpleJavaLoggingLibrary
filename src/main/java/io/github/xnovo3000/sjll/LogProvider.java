@@ -3,7 +3,7 @@ package io.github.xnovo3000.sjll;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
 import io.github.xnovo3000.sjll.error.LogConfigurationError;
-import io.github.xnovo3000.sjll.implementation.v1.ILogProvider;
+import io.github.xnovo3000.sjll.implementation.v2.ILogProvider;
 
 import java.io.IOException;
 import java.io.InputStream;

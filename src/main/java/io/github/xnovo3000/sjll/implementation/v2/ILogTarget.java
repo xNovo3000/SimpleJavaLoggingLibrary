@@ -1,4 +1,4 @@
-package io.github.xnovo3000.sjll.implementation.v1;
+package io.github.xnovo3000.sjll.implementation.v2;
 
 import io.github.xnovo3000.sjll.LogFormatter;
 import io.github.xnovo3000.sjll.LogTarget;
@@ -7,19 +7,19 @@ import io.github.xnovo3000.sjll.outputprovider.OutputProvider;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.util.LinkedList;
 import java.util.List;
-import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.LinkedBlockingQueue;
+import java.util.Queue;
 
 public class ILogTarget implements LogTarget {
 	
-	private final BlockingQueue<LogMessage> logMessageBlockingQueue;
+	private final Queue<LogMessage> logMessageBlockingQueue;
 	private final List<LogFormatter> logFormatters;
 	private final OutputProvider outputProvider;
 	private final int minimumImportance;
 	
 	public ILogTarget(List<LogFormatter> logFormatters, OutputProvider outputProvider, int minimumImportance) {
-		this.logMessageBlockingQueue = new LinkedBlockingQueue<>();
+		this.logMessageBlockingQueue = new LinkedList<>();
 		this.logFormatters = logFormatters;
 		this.outputProvider = outputProvider;
 		this.minimumImportance = minimumImportance;
@@ -32,12 +32,7 @@ public class ILogTarget implements LogTarget {
 		// For each message in the queue
 		while (!logMessageBlockingQueue.isEmpty()) {
 			// Try to get the message
-			LogMessage logMessage = null;
-			try {
-				logMessage = logMessageBlockingQueue.take();
-			} catch (InterruptedException e) {
-				e.printStackTrace();
-			}
+			LogMessage logMessage = logMessageBlockingQueue.poll();
 			// If the message exists
 			if (logMessage != null) {
 				// Reset messageBuilder
@@ -67,11 +62,7 @@ public class ILogTarget implements LogTarget {
 		// If the importance level is right
 		if (logMessage.getLevel().getImportance() >= minimumImportance) {
 			// Try to insert the message
-			try {
-				logMessageBlockingQueue.put(logMessage);
-			} catch (InterruptedException e) {
-				e.printStackTrace();
-			}
+			logMessageBlockingQueue.add(logMessage);
 		}
 	}
 	

@@ -9,7 +9,7 @@ import java.util.Objects;
  * @since 1.0
  * @author xNovo3000
  */
-public final class LogMessage {
+public class LogMessage {
 	
 	private final Level level;
 	private final String caller;
