@@ -2,9 +2,7 @@ package io.github.xnovo3000.sjll.implementation.v2;
 
 import io.github.xnovo3000.sjll.LogProvider;
 import io.github.xnovo3000.sjll.Logger;
-import io.github.xnovo3000.sjll.data.Level;
 import io.github.xnovo3000.sjll.error.LogConfigurationError;
-import io.github.xnovo3000.sjll.exception.ConfigurationErrorException;
 import io.github.xnovo3000.sjll.formatter.*;
 import io.github.xnovo3000.sjll.outputprovider.ConsoleOutputProvider;
 import io.github.xnovo3000.sjll.outputprovider.FileOutputProvider;
@@ -12,24 +10,22 @@ import io.github.xnovo3000.sjll.outputprovider.OutputProvider;
 
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 public class ILogProvider extends LogProvider {
 	
 	private final List<ILogger> loggers;
-	private final List<ILogTarget> logTargets;
-	private final List<LogFormatter> formatters;
-	private final List<OutputProvider> outputProviders;
+	private final Map<String, ILogTarget> logTargets;
 	
 	public ILogProvider(Map<?, ?> configurations) {
 		// Call super
 		super(configurations);
 		// Generate containers
 		this.loggers = new ArrayList<>();
-		this.logTargets = new ArrayList<>();
-		this.formatters = new ArrayList<>();
-		this.outputProviders = new ArrayList<>();
+		this.logTargets = new HashMap<>();
 		// Initialize
 		generateLogTargets();
 		generateLoggers();
@@ -76,12 +72,29 @@ public class ILogProvider extends LogProvider {
 					throw new LogConfigurationError("Target '" + name + "' -> Provider '" + provider + "' is invalid");
 			}
 			// Add the target to the list
-			logTargets.add(new ILogTarget(formatters, outputProvider, level));
+			logTargets.put(name, new ILogTarget(formats, outputProvider, level));
 		}
 	}
 	
 	private void generateLoggers() {
-	
+		// Get the targets from the configurations
+		List<?> configurationLoggers = (List<?>) configurations.get("loggers");
+		// Create each target
+		for (Object objectConfigurationLogger : configurationLoggers) {
+			// Get the configuration
+			Map<?, ?> configurationLogger = (Map<?, ?>) objectConfigurationLogger;
+			// Create the required fields
+			String name = (String) configurationLogger.get("name");
+			Integer level = (Integer) configurationLogger.get("level");
+			List<ILogTarget> targets = ((List<?>) configurationLogger.get("targets"))
+				.stream().map(map -> {
+					Map<?, ?> nameContainer = (Map<?, ?>) map;
+					String targetName = (String) nameContainer.get("name");
+					return logTargets.get(targetName);
+				}).collect(Collectors.toList());
+			// Push to the ArrayList
+			loggers.add(new ILogger(targets, level, name));
+		}
 	}
 	
 	/* TODO: Create better formatter generator */
